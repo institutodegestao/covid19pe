@@ -1,0 +1,2112 @@
+---
+title: "Sala de Situacao - COVID-19 PE"
+output:
+   flexdashboard::flex_dashboard:
+    # orientation: rows
+    vertical_layout: scroll
+    theme: lumen
+runtime: shiny
+---
+
+```{r setup, echo=FALSE}
+knitr::opts_chunk$set(error = TRUE)
+library(flexdashboard)
+library(shiny)
+source('./scripts/global.R')
+source('./scripts/macrogeres.R')
+source('./scripts/geres.R')
+source('./scripts/municipios.R')
+source('./scripts/analises.R')
+source('./scripts/r_efetivo.R')
+```
+
+Epidemiologia {data-icon="fa-chart-line" data-orientation=rows}
+===================================== 
+
+Row
+-------------------------------------
+
+### `r valueBox(value =  tags$p('Casos | Obitos', style = "font-size: 125%;"))`
+
+```{r epi pernambuco}
+valueBox('Pernambuco', color = 'blue')
+```
+
+Row
+-------------------------------------
+
+### `r valueBox(value =  tags$p('Casos Pernambuco', style = "font-size: 115%; font-weight: bold;"))`
+
+```{r epi resultados casos}
+
+shiny::radioButtons(inputId = 'radio1', 'Visualizacao dos Dados', c('Data do Fato', 'Semana Epidemiologica'), inline = T)
+
+ srag_semana_pe <- srag_pernambuco %>% group_by(semana) %>% summarise(CONFIRMADO = sum(CONFIRMADO), SRAG = sum(SRAG))
+
+ renderPlotly({
+ if(input$radio1 == "Data do Fato") {
+   
+    m <- subset(srag_pernambuco, data == max(srag_pernambuco$data)-5)
+   
+plotly::plot_ly(data = srag_pernambuco) %>%
+  add_trace(
+    x = ~data,
+    y = ~ceiling(sragfMM7),
+    type = 'scatter', mode = 'lines',
+    name = "MM7 - Srag",
+    line = list(color = 'rgb(22, 96, 167)', dash = 'dash'),
+    marker = list(color = 'rgb(22, 96, 167)')
+  )  %>%
+   add_trace(
+    x = ~data,
+    y = ~ceiling(SRAG),
+    type = 'bar', 
+    name = 'Srag',
+    line = list(color = 'white'),
+    marker = list(color = 'rgb(22, 96, 167)')
+  ) %>%
+  add_trace(
+    x = ~data,
+    y = ~ceiling(confMM7),
+    type = 'scatter', mode = 'lines',
+    name = "MM7 - Covid",
+    line = list(color = 'rgb(205, 12, 24)', dash = 'dash'),
+    marker = list(color = 'rgb(205, 12, 24)')
+  )  %>%
+  add_trace(
+    x = ~data,
+    y = ~ceiling(CONFIRMADO),
+    type = 'bar', 
+    name = 'Covid',
+    line = list(color = 'rgb(205, 12, 24)', dash = 'dash')
+  )  %>%
+  add_annotations(x = m$data,
+  y = m$sragfMM7,
+  text = 'Data base de Analise',
+  xref = "x",
+  yref = "y",
+  showarrow = TRUE,
+  arrowhead = 7,
+  ax = 40,
+  ay = -80) %>%
+  plotly::layout(
+    height = '380',
+    yaxis = list(title = ""),
+    xaxis = list(title = ""),
+    hovermode = "compare"
+  )
+  }
+
+  else {
+  plotly::plot_ly(data = srag_semana_pe) %>%
+  add_trace(
+    x = ~semana,
+    y = ~ceiling(SRAG),
+    type = 'bar', mode = 'lines',
+    name = "SRAG",
+    line = list(color = 'rgb(22, 96, 167)'),
+    marker = list(color = 'rgb(22, 96, 167)')
+  )  %>%
+  add_trace(
+    x = ~semana,
+    y = ~ceiling(CONFIRMADO),
+    type = 'bar', mode = 'lines',
+    name = "COVID",
+    line = list(color = 'rgb(205, 12, 24)'),
+    marker = list(color = 'rgb(205, 12, 24)')
+  )  %>%
+  plotly::layout(
+    height = '380',
+    yaxis = list(title = ""),
+    xaxis = list(title = ""),
+    hovermode = "compare"
+  ) 
+  }
+})
+```
+
+
+Row
+-------------------------------------
+
+### `r valueBox(value =  tags$p('Obitos Pernambuco', style = "font-size: 115%; font-weight: bold;"))`
+
+```{r epi resultados obitos}
+
+shiny::radioButtons(inputId = 'radio2', 'Visualizacao dos Dados', c('Data do Fato', 'Semana Epidemiologica'), inline = T)
+
+ obitos_semana_pe <- obitos_pernambuco %>% group_by(semana) %>% summarise(CONFIRMADO = sum(CONFIRMADO), SRAG = sum(SRAG))
+
+ renderPlotly({
+ if(input$radio2 == "Data do Fato") {
+   
+    m <- subset(obitos_pernambuco, data == max(obitos_pernambuco$data)-5)
+   
+plotly::plot_ly(data = obitos_pernambuco) %>%
+  add_trace(
+    x = ~data,
+    y = ~ceiling(sragfMM7),
+    type = 'scatter', mode = 'lines',
+    name = "MM7 - Srag",
+    line = list(color = 'rgb(22, 96, 167)', dash = 'dash'),
+    marker = list(color = 'rgb(22, 96, 167)')
+  )  %>%
+   add_trace(
+    x = ~data,
+    y = ~ceiling(SRAG),
+    type = 'bar', 
+    name = 'Srag',
+    line = list(color = 'white'),
+    marker = list(color = 'rgb(22, 96, 167)')
+  ) %>%
+  add_trace(
+    x = ~data,
+    y = ~ceiling(confMM7),
+    type = 'scatter', mode = 'lines',
+    name = "MM7 - Covid",
+    line = list(color = 'rgb(205, 12, 24)', dash = 'dash'),
+    marker = list(color = 'rgb(205, 12, 24)')
+  )  %>%
+  add_trace(
+    x = ~data,
+    y = ~ceiling(CONFIRMADO),
+    type = 'bar', 
+    name = 'Covid',
+    line = list(color = 'rgb(205, 12, 24)', dash = 'dash')
+  )  %>%
+  add_annotations(x = m$data,
+  y = m$sragfMM7,
+  text = 'Data base de Analise',
+  xref = "x",
+  yref = "y",
+  showarrow = TRUE,
+  arrowhead = 7,
+  ax = 40,
+  ay = -80) %>%
+  plotly::layout(
+    height = '380',
+    yaxis = list(title = ""),
+    xaxis = list(title = ""),
+    hovermode = "compare"
+  )
+  }
+
+  else {
+  plotly::plot_ly(data = obitos_semana_pe) %>%
+  add_trace(
+    x = ~semana,
+    y = ~ceiling(SRAG),
+    type = 'bar', mode = 'lines',
+    name = "SRAG",
+    line = list(color = 'rgb(22, 96, 167)'),
+    marker = list(color = 'rgb(22, 96, 167)')
+  )  %>%
+  add_trace(
+    x = ~semana,
+    y = ~ceiling(CONFIRMADO),
+    type = 'bar', mode = 'lines',
+    name = "COVID",
+    line = list(color = 'rgb(205, 12, 24)'),
+    marker = list(color = 'rgb(205, 12, 24)')
+  )  %>%
+  plotly::layout(
+    height = '380',
+    yaxis = list(title = ""),
+    xaxis = list(title = ""),
+    hovermode = "compare"
+  ) 
+  }
+})
+```
+
+Row
+-------------------------------------
+
+### `r valueBox(value =  tags$p('Casos | Obitos', style = "font-size: 125%;"))`
+
+```{r epi macrorregiao}
+valueBox('Macrorregiao', color = 'blue')
+```
+
+Row
+-------------------------------------
+
+### `r valueBox(value =  tags$p('Casos Macrorregiao', style = "font-size: 115%; font-weight: bold;"))`
+
+```{r casos macrorregiao}
+
+shiny::radioButtons(inputId = 'radio3', 'Visualizacao dos Dados', c('Data do Fato', 'Semana Epidemiologica'), inline = T)
+
+selectizeInput('macro_casos', 'Macrorregiao', choices = sort(as.character(unique(srag_macro$macro))), selected = 'I - METROPOLITANA')
+
+renderPlotly({
+
+  if(input$radio3 == "Data do Fato") {
+  
+  x <- srag_macro %>% filter(macro==input$macro_casos)
+  
+  m <- subset(x, data == max(x$data)-5)
+
+plotly::plot_ly(data = x) %>%
+  add_trace(
+    x = ~data,
+    y = ~ceiling(sragfMM7),
+    type = 'scatter', mode = 'lines',
+    name = "MM7 - Srag",
+    line = list(color = 'rgb(22, 96, 167)', dash = 'dash'),
+    marker = list(color = 'rgb(22, 96, 167)')
+  )  %>%
+   add_trace(
+    x = ~data,
+    y = ~ceiling(SRAG),
+    type = 'bar', 
+    name = 'Srag',
+    line = list(color = 'white'),
+    marker = list(color = 'rgb(22, 96, 167)')
+  ) %>%
+  add_trace(
+    x = ~data,
+    y = ~ceiling(confMM7),
+    type = 'scatter', mode = 'lines',
+    name = "MM7 - Covid",
+    line = list(color = 'rgb(205, 12, 24)', dash = 'dash'),
+    marker = list(color = 'rgb(205, 12, 24)')
+  )  %>%
+  add_trace(
+    x = ~data,
+    y = ~ceiling(CONFIRMADO),
+    type = 'bar', 
+    name = 'Covid',
+    line = list(color = 'rgb(205, 12, 24)', dash = 'dash')
+  )  %>%
+  add_annotations(x = m$data,
+  y = m$sragfMM7,
+  text = 'Data base de Analise',
+  xref = "x",
+  yref = "y",
+  showarrow = TRUE,
+  arrowhead = 7,
+  ax = 40,
+  ay = -80) %>%
+  plotly::layout(
+    height = '320',
+    yaxis = list(title = ""),
+    xaxis = list(title = ""),
+    hovermode = "compare"
+  )
+  }
+  
+  else {
+  srag_semana_macro <- srag_macro %>% filter(macro==input$macro_casos) %>% group_by(semana) %>% summarise(CONFIRMADO = sum(CONFIRMADO), SRAG = sum(SRAG))
+
+plotly::plot_ly(data = srag_semana_macro) %>%
+  add_trace(
+    x = ~semana,
+    y = ~ceiling(SRAG),
+    type = 'bar', mode = 'lines',
+    name = "SRAG",
+    line = list(color = 'rgb(22, 96, 167)'),
+    marker = list(color = 'rgb(22, 96, 167)')
+  )  %>%
+  add_trace(
+    x = ~semana,
+    y = ~ceiling(CONFIRMADO),
+    type = 'bar', mode = 'lines',
+    name = "COVID",
+    line = list(color = 'rgb(205, 12, 24)'),
+    marker = list(color = 'rgb(205, 12, 24)')
+  )  %>%
+  plotly::layout(
+    height = '320',
+    yaxis = list(title = ""),
+    xaxis = list(title = ""),
+    hovermode = "compare"
+  )
+    }
+  
+})
+```
+
+Row
+-------------------------------------
+
+### `r valueBox(value =  tags$p('Obitos Macrorregiao', style = "font-size: 115%; font-weight: bold;"))`
+
+```{r obitos macrorregiao}
+
+shiny::radioButtons(inputId = 'radio4', 'Visualizacao dos Dados', c('Data do Fato', 'Semana Epidemiologica'), inline = T)
+
+selectizeInput('macro_obitos', 'Macrorregiao', choices = sort(as.character(unique(obitos_macro$macro))), selected = 'I - METROPOLITANA')
+
+renderPlotly({
+
+  if(input$radio4 == "Data do Fato") {
+  
+  x <- obitos_macro %>% filter(macro==input$macro_obitos)
+  
+  m <- subset(x, data == max(x$data)-5)
+
+plotly::plot_ly(data = x) %>%
+  add_trace(
+    x = ~data,
+    y = ~ceiling(sragfMM7),
+    type = 'scatter', mode = 'lines',
+    name = "MM7 - Srag",
+    line = list(color = 'rgb(22, 96, 167)', dash = 'dash'),
+    marker = list(color = 'rgb(22, 96, 167)')
+  )  %>%
+   add_trace(
+    x = ~data,
+    y = ~ceiling(SRAG),
+    type = 'bar', 
+    name = 'Srag',
+    line = list(color = 'white'),
+    marker = list(color = 'rgb(22, 96, 167)')
+  ) %>%
+  add_trace(
+    x = ~data,
+    y = ~ceiling(confMM7),
+    type = 'scatter', mode = 'lines',
+    name = "MM7 - Covid",
+    line = list(color = 'rgb(205, 12, 24)', dash = 'dash'),
+    marker = list(color = 'rgb(205, 12, 24)')
+  )  %>%
+  add_trace(
+    x = ~data,
+    y = ~ceiling(CONFIRMADO),
+    type = 'bar', 
+    name = 'Covid',
+    line = list(color = 'rgb(205, 12, 24)', dash = 'dash')
+  )  %>%
+  add_annotations(x = m$data,
+  y = m$sragfMM7,
+  text = 'Data base de Analise',
+  xref = "x",
+  yref = "y",
+  showarrow = TRUE,
+  arrowhead = 7,
+  ax = 40,
+  ay = -80) %>%
+  plotly::layout(
+    height = '320',
+    yaxis = list(title = ""),
+    xaxis = list(title = ""),
+    hovermode = "compare"
+  )
+  }
+  
+  else {
+  obito_semana_macro <- obitos_macro %>% filter(macro==input$macro_obitos) %>% group_by(semana) %>% summarise(CONFIRMADO = sum(CONFIRMADO), SRAG = sum(SRAG))
+
+plotly::plot_ly(data = obito_semana_macro) %>%
+  add_trace(
+    x = ~semana,
+    y = ~ceiling(SRAG),
+    type = 'bar', mode = 'lines',
+    name = "SRAG",
+    line = list(color = 'rgb(22, 96, 167)'),
+    marker = list(color = 'rgb(22, 96, 167)')
+  )  %>%
+  add_trace(
+    x = ~semana,
+    y = ~ceiling(CONFIRMADO),
+    type = 'bar', mode = 'lines',
+    name = "COVID",
+    line = list(color = 'rgb(205, 12, 24)'),
+    marker = list(color = 'rgb(205, 12, 24)')
+  )  %>%
+  plotly::layout(
+    height = '320',
+    yaxis = list(title = ""),
+    xaxis = list(title = ""),
+    hovermode = "compare"
+  )
+    }
+  
+})
+```
+
+Row
+-------------------------------------
+
+### `r valueBox(value =  tags$p('Casos | Obitos', style = "font-size: 125%;"))`
+
+```{r epi geres}
+valueBox('Geres', color = 'blue')
+```
+
+Row
+-------------------------------------
+
+### `r valueBox(value =  tags$p('Casos Geres', style = "font-size: 115%; font-weight: bold;"))`
+
+```{r casos geres}
+
+shiny::radioButtons(inputId = 'radioEpi5', 'Visualizacao dos Dados', c('Data do Fato', 'Semana Epidemiologica'), inline = T)
+
+selectizeInput('geres_casos', 'Geres', choices = sort(as.character(unique(srag_geres$geres))), selected = 'I GERES')
+
+renderPlotly({
+
+  if(input$radioEpi5 == "Data do Fato") {
+  
+  x <- srag_geres %>% filter(geres==input$geres_casos)
+  
+  m <- subset(x, data == max(x$data)-5)
+
+plotly::plot_ly(data = x) %>%
+  add_trace(
+    x = ~data,
+    y = ~ceiling(sragfMM7),
+    type = 'scatter', mode = 'lines',
+    name = "MM7 - Srag",
+    line = list(color = 'rgb(22, 96, 167)', dash = 'dash'),
+    marker = list(color = 'rgb(22, 96, 167)')
+  )  %>%
+   add_trace(
+    x = ~data,
+    y = ~ceiling(SRAG),
+    type = 'bar', 
+    name = 'Srag',
+    line = list(color = 'white'),
+    marker = list(color = 'rgb(22, 96, 167)')
+  ) %>%
+  add_trace(
+    x = ~data,
+    y = ~ceiling(confMM7),
+    type = 'scatter', mode = 'lines',
+    name = "MM7 - Covid",
+    line = list(color = 'rgb(205, 12, 24)', dash = 'dash'),
+    marker = list(color = 'rgb(205, 12, 24)')
+  )  %>%
+  add_trace(
+    x = ~data,
+    y = ~ceiling(CONFIRMADO),
+    type = 'bar', 
+    name = 'Covid',
+    line = list(color = 'rgb(205, 12, 24)', dash = 'dash')
+  )  %>%
+  add_annotations(x = m$data,
+  y = m$sragfMM7,
+  text = 'Data base de Analise',
+  xref = "x",
+  yref = "y",
+  showarrow = TRUE,
+  arrowhead = 7,
+  ax = 40,
+  ay = -80) %>%
+  plotly::layout(
+    height = '320',
+    yaxis = list(title = ""),
+    xaxis = list(title = ""),
+    hovermode = "compare"
+  )
+  }
+  
+  else {
+  srag_semana_geres <- srag_geres %>% filter(geres==input$geres_casos) %>% group_by(semana) %>% summarise(CONFIRMADO = sum(CONFIRMADO), SRAG = sum(SRAG))
+
+plotly::plot_ly(data = srag_semana_geres) %>%
+  add_trace(
+    x = ~semana,
+    y = ~ceiling(SRAG),
+    type = 'bar', mode = 'lines',
+    name = "SRAG",
+    line = list(color = 'rgb(22, 96, 167)'),
+    marker = list(color = 'rgb(22, 96, 167)')
+  )  %>%
+  add_trace(
+    x = ~semana,
+    y = ~ceiling(CONFIRMADO),
+    type = 'bar', mode = 'lines',
+    name = "COVID",
+    line = list(color = 'rgb(205, 12, 24)'),
+    marker = list(color = 'rgb(205, 12, 24)')
+  )  %>%
+  plotly::layout(
+    height = '320',
+    yaxis = list(title = ""),
+    xaxis = list(title = ""),
+    hovermode = "compare"
+  )
+    }
+  
+})
+```
+
+Row
+-------------------------------------
+
+### `r valueBox(value =  tags$p('Obitos Geres', style = "font-size: 115%; font-weight: bold;"))`
+
+```{r obitos geres}
+
+shiny::radioButtons(inputId = 'radioEpi6', 'Visualizacao dos Dados', c('Data do Fato', 'Semana Epidemiologica'), inline = T)
+
+selectizeInput('geres_obitos', 'Geres', choices = sort(as.character(unique(obitos_geres$geres))), selected = 'I GERES')
+
+renderPlotly({
+
+  if(input$radioEpi6 == "Data do Fato") {
+  
+  x <- obitos_geres %>% filter(geres==input$geres_obitos)
+  
+  m <- subset(x, data == max(x$data)-5)
+
+plotly::plot_ly(data = x) %>%
+  add_trace(
+    x = ~data,
+    y = ~ceiling(sragfMM7),
+    type = 'scatter', mode = 'lines',
+    name = "MM7 - Srag",
+    line = list(color = 'rgb(22, 96, 167)', dash = 'dash'),
+    marker = list(color = 'rgb(22, 96, 167)')
+  )  %>%
+   add_trace(
+    x = ~data,
+    y = ~ceiling(SRAG),
+    type = 'bar', 
+    name = 'Srag',
+    line = list(color = 'white'),
+    marker = list(color = 'rgb(22, 96, 167)')
+  ) %>%
+  add_trace(
+    x = ~data,
+    y = ~ceiling(confMM7),
+    type = 'scatter', mode = 'lines',
+    name = "MM7 - Covid",
+    line = list(color = 'rgb(205, 12, 24)', dash = 'dash'),
+    marker = list(color = 'rgb(205, 12, 24)')
+  )  %>%
+  add_trace(
+    x = ~data,
+    y = ~ceiling(CONFIRMADO),
+    type = 'bar', 
+    name = 'Covid',
+    line = list(color = 'rgb(205, 12, 24)', dash = 'dash')
+  )  %>%
+  add_annotations(x = m$data,
+  y = m$sragfMM7,
+  text = 'Data base de Analise',
+  xref = "x",
+  yref = "y",
+  showarrow = TRUE,
+  arrowhead = 7,
+  ax = 40,
+  ay = -80) %>%
+  plotly::layout(
+    height = '320',
+    yaxis = list(title = ""),
+    xaxis = list(title = ""),
+    hovermode = "compare"
+  )
+  }
+  
+  else {
+  obito_semana_geres <- obitos_geres %>% filter(geres==input$geres_obitos) %>% group_by(semana) %>% summarise(CONFIRMADO = sum(CONFIRMADO), SRAG = sum(SRAG))
+
+plotly::plot_ly(data = obito_semana_geres) %>%
+  add_trace(
+    x = ~semana,
+    y = ~ceiling(SRAG),
+    type = 'bar', mode = 'lines',
+    name = "SRAG",
+    line = list(color = 'rgb(22, 96, 167)'),
+    marker = list(color = 'rgb(22, 96, 167)')
+  )  %>%
+  add_trace(
+    x = ~semana,
+    y = ~ceiling(CONFIRMADO),
+    type = 'bar', mode = 'lines',
+    name = "COVID",
+    line = list(color = 'rgb(205, 12, 24)'),
+    marker = list(color = 'rgb(205, 12, 24)')
+  )  %>%
+  plotly::layout(
+    height = '320',
+    yaxis = list(title = ""),
+    xaxis = list(title = ""),
+    hovermode = "compare"
+  )
+    }
+  
+})
+```
+
+Row
+-------------------------------------
+
+### `r valueBox(value =  tags$p('Casos | Obitos', style = "font-size: 125%;"))`
+
+```{r epi municipio}
+valueBox('Municipio', color = 'blue')
+```
+
+Row
+-------------------------------------
+
+### `r valueBox(value =  tags$p('Casos Municipio', style = "font-size: 115%; font-weight: bold;"))`
+
+```{r casos municipio}
+
+shiny::radioButtons(inputId = 'radioEpi7', 'Visualizacao dos Dados', c('Data do Fato', 'Semana Epidemiologica'), inline = T)
+
+selectizeInput('municipio_casos', 'Municipio', choices = sort(as.character(unique(srag_municipio_gb$municipio))), selected = 'RECIFE')
+
+renderPlotly({
+
+  if(input$radioEpi7 == "Data do Fato") {
+  
+  x <- srag_municipio_gb %>% filter(municipio==input$municipio_casos)
+  
+  m <- subset(x, data == max(x$data)-5)
+
+plotly::plot_ly(data = x) %>%
+  add_trace(
+    x = ~data,
+    y = ~ceiling(sragfMM7),
+    type = 'scatter', mode = 'lines',
+    name = "MM7 - Srag",
+    line = list(color = 'rgb(22, 96, 167)', dash = 'dash'),
+    marker = list(color = 'rgb(22, 96, 167)')
+  )  %>%
+   add_trace(
+    x = ~data,
+    y = ~ceiling(SRAG),
+    type = 'bar', 
+    name = 'Srag',
+    line = list(color = 'white'),
+    marker = list(color = 'rgb(22, 96, 167)')
+  ) %>%
+  add_trace(
+    x = ~data,
+    y = ~ceiling(confMM7),
+    type = 'scatter', mode = 'lines',
+    name = "MM7 - Covid",
+    line = list(color = 'rgb(205, 12, 24)', dash = 'dash'),
+    marker = list(color = 'rgb(205, 12, 24)')
+  )  %>%
+  add_trace(
+    x = ~data,
+    y = ~ceiling(CONFIRMADO),
+    type = 'bar', 
+    name = 'Covid',
+    line = list(color = 'rgb(205, 12, 24)', dash = 'dash')
+  )  %>%
+  add_annotations(x = m$data,
+  y = m$sragfMM7,
+  text = 'Data base de Analise',
+  xref = "x",
+  yref = "y",
+  showarrow = TRUE,
+  arrowhead = 7,
+  ax = 40,
+  ay = -80) %>%
+  plotly::layout(
+    height = '320',
+    yaxis = list(title = ""),
+    xaxis = list(title = ""),
+    hovermode = "compare"
+  )
+  }
+  
+  else {
+  srag_semana_municipio <- srag_municipio_gb %>% filter(municipio==input$municipio_casos) %>% group_by(semana) %>% summarise(CONFIRMADO = sum(CONFIRMADO), SRAG = sum(SRAG))
+
+plotly::plot_ly(data = srag_semana_municipio) %>%
+  add_trace(
+    x = ~semana,
+    y = ~ceiling(SRAG),
+    type = 'bar', mode = 'lines',
+    name = "SRAG",
+    line = list(color = 'rgb(22, 96, 167)'),
+    marker = list(color = 'rgb(22, 96, 167)')
+  )  %>%
+  add_trace(
+    x = ~semana,
+    y = ~ceiling(CONFIRMADO),
+    type = 'bar', mode = 'lines',
+    name = "COVID",
+    line = list(color = 'rgb(205, 12, 24)'),
+    marker = list(color = 'rgb(205, 12, 24)')
+  )  %>%
+  plotly::layout(
+    height = '320',
+    yaxis = list(title = ""),
+    xaxis = list(title = ""),
+    hovermode = "compare"
+  )
+    }
+  
+})
+```
+
+Row
+-------------------------------------
+
+### `r valueBox(value =  tags$p('Obitos Municipio', style = "font-size: 115%; font-weight: bold;"))`
+
+```{r obitos municipio}
+
+shiny::radioButtons(inputId = 'radioEpi8', 'Visualizacao dos Dados', c('Data do Fato', 'Semana Epidemiologica'), inline = T)
+
+selectizeInput('municipio_obitos', 'Municipio', choices = sort(as.character(unique(obitos_municipio_gb$municipio))), selected = 'RECIFE')
+
+renderPlotly({
+
+  if(input$radioEpi8 == "Data do Fato") {
+  
+  x <- obitos_municipio_gb %>% filter(municipio==input$municipio_obitos)
+  
+  m <- subset(x, data == max(x$data)-5)
+
+plotly::plot_ly(data = x) %>%
+  add_trace(
+    x = ~data,
+    y = ~ceiling(sragfMM7),
+    type = 'scatter', mode = 'lines',
+    name = "MM7 - Srag",
+    line = list(color = 'rgb(22, 96, 167)', dash = 'dash'),
+    marker = list(color = 'rgb(22, 96, 167)')
+  )  %>%
+   add_trace(
+    x = ~data,
+    y = ~ceiling(SRAG),
+    type = 'bar', 
+    name = 'Srag',
+    line = list(color = 'white'),
+    marker = list(color = 'rgb(22, 96, 167)')
+  ) %>%
+  add_trace(
+    x = ~data,
+    y = ~ceiling(confMM7),
+    type = 'scatter', mode = 'lines',
+    name = "MM7 - Covid",
+    line = list(color = 'rgb(205, 12, 24)', dash = 'dash'),
+    marker = list(color = 'rgb(205, 12, 24)')
+  )  %>%
+  add_trace(
+    x = ~data,
+    y = ~ceiling(CONFIRMADO),
+    type = 'bar', 
+    name = 'Covid',
+    line = list(color = 'rgb(205, 12, 24)', dash = 'dash')
+  )  %>%
+  add_annotations(x = m$data,
+  y = m$sragfMM7,
+  text = 'Data base de Analise',
+  xref = "x",
+  yref = "y",
+  showarrow = TRUE,
+  arrowhead = 7,
+  ax = 40,
+  ay = -80) %>%
+  plotly::layout(
+    height = '320',
+    yaxis = list(title = ""),
+    xaxis = list(title = ""),
+    hovermode = "compare"
+  )
+  }
+  
+  else {
+  obitos_semana_municipio <- obitos_municipio_gb %>% filter(municipio==input$municipio_obitos) %>% group_by(semana) %>% summarise(CONFIRMADO = sum(CONFIRMADO), SRAG = sum(SRAG))
+
+plotly::plot_ly(data = obitos_semana_municipio) %>%
+  add_trace(
+    x = ~semana,
+    y = ~ceiling(SRAG),
+    type = 'bar', mode = 'lines',
+    name = "SRAG",
+    line = list(color = 'rgb(22, 96, 167)'),
+    marker = list(color = 'rgb(22, 96, 167)')
+  )  %>%
+  add_trace(
+    x = ~semana,
+    y = ~ceiling(CONFIRMADO),
+    type = 'bar', mode = 'lines',
+    name = "COVID",
+    line = list(color = 'rgb(205, 12, 24)'),
+    marker = list(color = 'rgb(205, 12, 24)')
+  )  %>%
+  plotly::layout(
+    height = '320',
+    yaxis = list(title = ""),
+    xaxis = list(title = ""),
+    hovermode = "compare"
+  )
+    }
+  
+})
+```
+
+Sistema de Saude {data-icon="fa-chart-bar" data-orientation=rows}
+===================================== 
+
+Row
+-------------------------------------
+
+### `r valueBox(value =  tags$p('Solicitacoes | Leitos', style = "font-size: 125%;"))`
+
+```{r sist saude pernambuco}
+valueBox('Pernambuco', color = 'orange')
+```
+
+Row
+-------------------------------------
+
+### `r valueBox(value =  tags$p('Indicadores de Solicitacoes - Media Movel 7 Dias (MM7)', style = "font-size: 125%; font-weight: bold;"))`
+
+```{r sis saude solicitacoes pernambuco}
+
+shiny::radioButtons(inputId = 'radio5', 'Indicador', c('Solicitacoes', 'Fila', 'Fila Nova'), inline = T)
+
+renderPlotly({
+ 
+  if (input$radio5 != "Fila Nova") {
+    if (input$radio5 == "Solicitacoes") {
+plotly::plot_ly(data = solicitacoes_pernambuco) %>%
+  plotly::add_trace(
+    x = ~data,
+    y = ~ceiling(geralMM7),
+    type = 'bar',
+    textposition = 'outside',
+    name = "Total",
+    line = list(color = "orange"),
+    marker = list(color = "orange")
+  ) %>%
+  plotly::add_trace(
+    x = ~data,
+    y = ~ceiling(utiMM7),
+    type = 'scatter', mode = 'lines',
+    textposition = 'outside',
+    name = "UTI",
+    line = list(color = "red"),
+    marker = list(color = "red")
+  ) %>%
+  plotly::add_trace(
+    x = ~data,
+    y = ~ceiling(enfMM7),
+    type = 'scatter', mode = 'lines',
+    textposition = 'outside',
+    name = "ENFERMARIA",
+    line = list(color = "blue"),
+    marker = list(color = "blue")
+  ) %>%
+  plotly::layout(
+    height = 400, 
+    yaxis = list(title = ""),
+    xaxis = list(title = ""),
+    hovermode = "compare"
+  )
+    }
+else {
+plotly::plot_ly(data = fila_total_pernambuco) %>%
+  plotly::add_trace(
+    x = ~data,
+    y = ~ceiling(geralMM7),
+    type = 'bar',
+    textposition = 'outside',
+    name = "Total",
+    line = list(color = "orange"),
+    marker = list(color = "orange")
+  ) %>%
+    plotly::add_trace(
+    x = ~data,
+    y = ~ceiling(utiMM7),
+    type = 'scatter', mode = 'lines',
+    textposition = 'outside',
+    name = "UTI",
+    line = list(color = "red"),
+    marker = list(color = "red")
+  ) %>%
+  plotly::add_trace(
+    x = ~data,
+    y = ~ceiling(enfMM7),
+    type = 'scatter', mode = 'lines',
+    textposition = 'outside',
+    name = "ENFERMARIA",
+    line = list(color = "blue"),
+    marker = list(color = "blue")
+  ) %>%
+  plotly::layout(
+    height = 400, 
+    yaxis = list(title = ""),
+    xaxis = list(title = ""),
+    hovermode = "compare"
+  )
+}
+  }
+else {
+  plotly::plot_ly(data = fila_nova_pernambuco) %>%
+  plotly::add_trace(
+    x = ~data,
+    y = ~ceiling(geralMM7),
+    type = 'bar',
+    textposition = 'outside',
+    name = "Total",
+    line = list(color = "orange"),
+    marker = list(color = "orange")
+  ) %>%
+  plotly::add_trace(
+    x = ~data,
+    y = ~ceiling(utiMM7),
+    type = 'scatter', mode = 'lines',
+    textposition = 'outside',
+    name = "UTI",
+    line = list(color = "red"),
+    marker = list(color = "red")
+  ) %>%
+  plotly::add_trace(
+    x = ~data,
+    y = ~ceiling(enfMM7),
+    type = 'scatter', mode = 'lines',
+    textposition = 'outside',
+    name = "ENFERMARIA",
+    line = list(color = "blue"),
+    marker = list(color = "blue")
+  ) %>%
+  plotly::layout(
+    height = 400, 
+    yaxis = list(title = ""),
+    xaxis = list(title = ""),
+    hovermode = "compare"
+  )
+}
+})
+```
+
+Row
+-------------------------------------
+
+### `r valueBox(value =  tags$p('Indicadores de Leitos - Media Movel 7 Dias (MM7)', style = "font-size: 125%; font-weight: bold;"))`
+
+```{r sis saude internacoes pernambuco}
+
+shiny::radioButtons(inputId = 'radio6', 'Indicador', c('Leitos', 'Ocupacao', 'Internacao'), inline = T)
+
+renderPlotly({
+ 
+  if (input$radio6 != "Internacao") {
+    if (input$radio6 == "Leitos") {
+plotly::plot_ly(data = leitos_pernambuco) %>%
+  plotly::add_trace(
+    x = ~data,
+    y = ~ceiling(totalGERALMM7),
+    type = 'bar',
+    textposition = 'outside',
+    name = "Total",
+    line = list(color = "orange"),
+    marker = list(color = "orange")
+  ) %>%
+  plotly::add_trace(
+    x = ~data,
+    y = ~ceiling(totalUTIMM7),
+    type = 'scatter', mode = 'lines',
+    textposition = 'outside',
+    name = "UTI",
+    line = list(color = "red"),
+    marker = list(color = "red")
+  ) %>%
+  plotly::add_trace(
+    x = ~data,
+    y = ~ceiling(totalENFMM7),
+    type = 'scatter', mode = 'lines',
+    textposition = 'outside',
+    name = "ENFERMARIA",
+    line = list(color = "blue"),
+    marker = list(color = "blue")
+  ) %>%
+  plotly::layout(
+    height = 400, 
+    yaxis = list(title = ""),
+    xaxis = list(title = ""),
+    hovermode = "compare"
+  )
+    }
+else {
+plotly::plot_ly(data = leitos_pernambuco) %>%
+  plotly::add_trace(
+    x = ~data,
+    y = ~txTOTALMM7,
+    type = 'bar',
+    textposition = 'outside',
+    name = "Total",
+    line = list(color = "orange"),
+    marker = list(color = "orange")
+  ) %>%
+    plotly::add_trace(
+    x = ~data,
+    y = ~txUTIMM7,
+    type = 'scatter', mode = 'lines',
+    textposition = 'outside',
+    name = "UTI",
+    line = list(color = "red"),
+    marker = list(color = "red")
+  ) %>%
+  plotly::add_trace(
+    x = ~data,
+    y = ~txENFMM7,
+    type = 'scatter', mode = 'lines',
+    textposition = 'outside',
+    name = "ENFERMARIA",
+    line = list(color = "blue"),
+    marker = list(color = "blue")
+  ) %>%
+  plotly::layout(
+    height = 400, 
+    yaxis = list(title = ""),
+    xaxis = list(title = ""),
+    hovermode = "compare"
+  )
+}
+  }
+else {
+  plotly::plot_ly(data = internacoes_pernambuco) %>%
+  plotly::add_trace(
+    x = ~data,
+    y = ~ceiling(intGLMM7),
+    type = 'bar',
+    textposition = 'outside',
+    name = "Total",
+    line = list(color = "orange"),
+    marker = list(color = "orange")
+  ) %>%
+  plotly::add_trace(
+    x = ~data,
+    y = ~ceiling(intUTIMM7),
+    type = 'scatter', mode = 'lines',
+    textposition = 'outside',
+    name = "UTI",
+    line = list(color = "red"),
+    marker = list(color = "red")
+  ) %>%
+  plotly::add_trace(
+    x = ~data,
+    y = ~ceiling(intENFMM7),
+    type = 'scatter', mode = 'lines',
+    textposition = 'outside',
+    name = "ENFERMARIA",
+    line = list(color = "blue"),
+    marker = list(color = "blue")
+  ) %>%
+  plotly::layout(
+    height = 400, 
+    yaxis = list(title = ""),
+    xaxis = list(title = ""),
+    hovermode = "compare"
+  )
+}
+})
+```
+
+Row
+-------------------------------------
+
+### `r valueBox(value =  tags$p('Solicitacoes | Leitos', style = "font-size: 125%;"))`
+
+```{r sist saude macro}
+valueBox('Macrorregiao', color = 'orange')
+```
+
+Row
+-------------------------------------
+
+### `r valueBox(value =  tags$p('Indicadores de Solicitacoes - Media Movel 7 Dias (MM7)', style = "font-size: 125%; font-weight: bold;"))`
+
+```{r sis saude solicitacoes macrorregiao}
+
+shiny::radioButtons(inputId = 'radioSS3', 'Indicador', c('Solicitacoes', 'Fila', 'Fila Nova'), inline = T)
+
+selectizeInput('macro_solicitacoes', 'Macrorregiao', choices = sort(as.character(unique(solicitacoes_macro$macro))), selected = 'I - METROPOLITANA')
+
+renderPlotly({
+ 
+  x <- solicitacoes_macro %>% filter(macro == input$macro_solicitacoes)
+  y <- fila_total_macro %>% filter(macro == input$macro_solicitacoes)
+  z <- fila_nova_macro %>% filter(macro == input$macro_solicitacoes)
+  
+  if (input$radioSS3 != "Fila Nova") {
+    if (input$radioSS3 == "Solicitacoes") {
+plotly::plot_ly(data = x) %>%
+  plotly::add_trace(
+    x = ~data,
+    y = ~ceiling(geralMM7),
+    type = 'bar',
+    textposition = 'outside',
+    name = "Total",
+    line = list(color = "orange"),
+    marker = list(color = "orange")
+  ) %>%
+  plotly::add_trace(
+    x = ~data,
+    y = ~ceiling(utiMM7),
+    type = 'scatter', mode = 'lines',
+    textposition = 'outside',
+    name = "UTI",
+    line = list(color = "red"),
+    marker = list(color = "red")
+  ) %>%
+  plotly::add_trace(
+    x = ~data,
+    y = ~ceiling(enfMM7),
+    type = 'scatter', mode = 'lines',
+    textposition = 'outside',
+    name = "ENFERMARIA",
+    line = list(color = "blue"),
+    marker = list(color = "blue")
+  ) %>%
+  plotly::layout(
+    height = 350, 
+    yaxis = list(title = ""),
+    xaxis = list(title = ""),
+    hovermode = "compare"
+  )
+    }
+else {
+plotly::plot_ly(data = y) %>%
+  plotly::add_trace(
+    x = ~data,
+    y = ~ceiling(geralMM7),
+    type = 'bar',
+    textposition = 'outside',
+    name = "Total",
+    line = list(color = "orange"),
+    marker = list(color = "orange")
+  ) %>%
+    plotly::add_trace(
+    x = ~data,
+    y = ~ceiling(utiMM7),
+    type = 'scatter', mode = 'lines',
+    textposition = 'outside',
+    name = "UTI",
+    line = list(color = "red"),
+    marker = list(color = "red")
+  ) %>%
+  plotly::add_trace(
+    x = ~data,
+    y = ~ceiling(enfMM7),
+    type = 'scatter', mode = 'lines',
+    textposition = 'outside',
+    name = "ENFERMARIA",
+    line = list(color = "blue"),
+    marker = list(color = "blue")
+  ) %>%
+  plotly::layout(
+    height = 350, 
+    yaxis = list(title = ""),
+    xaxis = list(title = ""),
+    hovermode = "compare"
+  )
+}
+  }
+else {
+  plotly::plot_ly(data = z) %>%
+  plotly::add_trace(
+    x = ~data,
+    y = ~ceiling(geralMM7),
+    type = 'bar',
+    textposition = 'outside',
+    name = "Total",
+    line = list(color = "orange"),
+    marker = list(color = "orange")
+  ) %>%
+  plotly::add_trace(
+    x = ~data,
+    y = ~ceiling(utiMM7),
+    type = 'scatter', mode = 'lines',
+    textposition = 'outside',
+    name = "UTI",
+    line = list(color = "red"),
+    marker = list(color = "red")
+  ) %>%
+  plotly::add_trace(
+    x = ~data,
+    y = ~ceiling(enfMM7),
+    type = 'scatter', mode = 'lines',
+    textposition = 'outside',
+    name = "ENFERMARIA",
+    line = list(color = "blue"),
+    marker = list(color = "blue")
+  ) %>%
+  plotly::layout(
+    height = 350, 
+    yaxis = list(title = ""),
+    xaxis = list(title = ""),
+    hovermode = "compare"
+  )
+}
+})
+```
+
+Row
+-------------------------------------
+
+### `r valueBox(value =  tags$p('Indicadores de Leitos - Media Movel 7 Dias (MM7)', style = "font-size: 125%; font-weight: bold;"))`
+
+```{r sis saude internacoes macro}
+
+shiny::radioButtons(inputId = 'radioSS4', 'Indicador', c('Leitos', 'Ocupacao', 'Internacao'), inline = T)
+
+selectizeInput('macro_internacoes', 'Macrorregiao', choices = sort(as.character(unique(solicitacoes_macro$macro))), selected = 'I - METROPOLITANA')
+
+renderPlotly({
+ 
+  x <- leitos_macrogeres %>% filter(macrogeres == input$macro_internacoes)
+  y <- internacoes_macro %>% filter(macro == input$macro_internacoes)
+  
+  if (input$radioSS4 != "Internacao") {
+    if (input$radioSS4 == "Leitos") {
+plotly::plot_ly(data = x) %>%
+  plotly::add_trace(
+    x = ~data,
+    y = ~ceiling(totalGERALMM7),
+    type = 'bar',
+    textposition = 'outside',
+    name = "Total",
+    line = list(color = "orange"),
+    marker = list(color = "orange")
+  ) %>%
+  plotly::add_trace(
+    x = ~data,
+    y = ~ceiling(totalUTIMM7),
+    type = 'scatter', mode = 'lines',
+    textposition = 'outside',
+    name = "UTI",
+    line = list(color = "red"),
+    marker = list(color = "red")
+  ) %>%
+  plotly::add_trace(
+    x = ~data,
+    y = ~ceiling(totalENFMM7),
+    type = 'scatter', mode = 'lines',
+    textposition = 'outside',
+    name = "ENFERMARIA",
+    line = list(color = "blue"),
+    marker = list(color = "blue")
+  ) %>%
+  plotly::layout(
+    height = 350, 
+    yaxis = list(title = ""),
+    xaxis = list(title = ""),
+    hovermode = "compare"
+  )
+    }
+else {
+plotly::plot_ly(data = x) %>%
+  plotly::add_trace(
+    x = ~data,
+    y = ~txTOTALMM7,
+    type = 'bar',
+    textposition = 'outside',
+    name = "Total",
+    line = list(color = "orange"),
+    marker = list(color = "orange")
+  ) %>%
+    plotly::add_trace(
+    x = ~data,
+    y = ~txUTIMM7,
+    type = 'scatter', mode = 'lines',
+    textposition = 'outside',
+    name = "UTI",
+    line = list(color = "red"),
+    marker = list(color = "red")
+  ) %>%
+  plotly::add_trace(
+    x = ~data,
+    y = ~txENFMM7,
+    type = 'scatter', mode = 'lines',
+    textposition = 'outside',
+    name = "ENFERMARIA",
+    line = list(color = "blue"),
+    marker = list(color = "blue")
+  ) %>%
+  plotly::layout(
+    height = 350, 
+    yaxis = list(title = ""),
+    xaxis = list(title = ""),
+    hovermode = "compare"
+  )
+}
+  }
+else {
+  plotly::plot_ly(data = y) %>%
+  plotly::add_trace(
+    x = ~data,
+    y = ~ceiling(intGLMM7),
+    type = 'bar',
+    textposition = 'outside',
+    name = "Total",
+    line = list(color = "orange"),
+    marker = list(color = "orange")
+  ) %>%
+  plotly::add_trace(
+    x = ~data,
+    y = ~ceiling(intUTIMM7),
+    type = 'scatter', mode = 'lines',
+    textposition = 'outside',
+    name = "UTI",
+    line = list(color = "red"),
+    marker = list(color = "red")
+  ) %>%
+  plotly::add_trace(
+    x = ~data,
+    y = ~ceiling(intENFMM7),
+    type = 'scatter', mode = 'lines',
+    textposition = 'outside',
+    name = "ENFERMARIA",
+    line = list(color = "blue"),
+    marker = list(color = "blue")
+  ) %>%
+  plotly::layout(
+    height = 350, 
+    yaxis = list(title = ""),
+    xaxis = list(title = ""),
+    hovermode = "compare"
+  )
+}
+})
+```
+
+Row
+-------------------------------------
+
+### `r valueBox(value =  tags$p('Solicitacoes | Leitos', style = "font-size: 125%;"))`
+
+```{r sist saude geres}
+valueBox('Geres', color = 'orange')
+```
+
+Row
+-------------------------------------
+
+### `r valueBox(value =  tags$p('Indicadores de Solicitacoes - Media Movel 7 Dias (MM7)', style = "font-size: 125%; font-weight: bold;"))`
+
+```{r sis saude solicitacoes geres}
+
+shiny::radioButtons(inputId = 'radioSS5', 'Indicador', c('Solicitacoes', 'Fila', 'Fila Nova'), inline = T)
+
+selectizeInput('geres_solicitacoes', 'Geres', choices = sort(as.character(unique(solicitacoes_geres$geres))), selected = 'I GERES')
+
+renderPlotly({
+ 
+  x <- solicitacoes_geres %>% filter(geres == input$geres_solicitacoes)
+  y <- fila_total_geres %>% filter(geres == input$geres_solicitacoes)
+  z <- fila_nova_geres %>% filter(geres == input$geres_solicitacoes)
+  
+  if (input$radioSS5 != "Fila Nova") {
+    if (input$radioSS5 == "Solicitacoes") {
+plotly::plot_ly(data = x) %>%
+  plotly::add_trace(
+    x = ~data,
+    y = ~ceiling(geralMM7),
+    type = 'bar',
+    textposition = 'outside',
+    name = "Total",
+    line = list(color = "orange"),
+    marker = list(color = "orange")
+  ) %>%
+  plotly::add_trace(
+    x = ~data,
+    y = ~ceiling(utiMM7),
+    type = 'scatter', mode = 'lines',
+    textposition = 'outside',
+    name = "UTI",
+    line = list(color = "red"),
+    marker = list(color = "red")
+  ) %>%
+  plotly::add_trace(
+    x = ~data,
+    y = ~ceiling(enfMM7),
+    type = 'scatter', mode = 'lines',
+    textposition = 'outside',
+    name = "ENFERMARIA",
+    line = list(color = "blue"),
+    marker = list(color = "blue")
+  ) %>%
+  plotly::layout(
+    height = 350, 
+    yaxis = list(title = ""),
+    xaxis = list(title = ""),
+    hovermode = "compare"
+  )
+    }
+else {
+plotly::plot_ly(data = y) %>%
+  plotly::add_trace(
+    x = ~data,
+    y = ~ceiling(geralMM7),
+    type = 'bar',
+    textposition = 'outside',
+    name = "Total",
+    line = list(color = "orange"),
+    marker = list(color = "orange")
+  ) %>%
+    plotly::add_trace(
+    x = ~data,
+    y = ~ceiling(utiMM7),
+    type = 'scatter', mode = 'lines',
+    textposition = 'outside',
+    name = "UTI",
+    line = list(color = "red"),
+    marker = list(color = "red")
+  ) %>%
+  plotly::add_trace(
+    x = ~data,
+    y = ~ceiling(enfMM7),
+    type = 'scatter', mode = 'lines',
+    textposition = 'outside',
+    name = "ENFERMARIA",
+    line = list(color = "blue"),
+    marker = list(color = "blue")
+  ) %>%
+  plotly::layout(
+    height = 350, 
+    yaxis = list(title = ""),
+    xaxis = list(title = ""),
+    hovermode = "compare"
+  )
+}
+  }
+else {
+  plotly::plot_ly(data = z) %>%
+  plotly::add_trace(
+    x = ~data,
+    y = ~ceiling(geralMM7),
+    type = 'bar',
+    textposition = 'outside',
+    name = "Total",
+    line = list(color = "orange"),
+    marker = list(color = "orange")
+  ) %>%
+  plotly::add_trace(
+    x = ~data,
+    y = ~ceiling(utiMM7),
+    type = 'scatter', mode = 'lines',
+    textposition = 'outside',
+    name = "UTI",
+    line = list(color = "red"),
+    marker = list(color = "red")
+  ) %>%
+  plotly::add_trace(
+    x = ~data,
+    y = ~ceiling(enfMM7),
+    type = 'scatter', mode = 'lines',
+    textposition = 'outside',
+    name = "ENFERMARIA",
+    line = list(color = "blue"),
+    marker = list(color = "blue")
+  ) %>%
+  plotly::layout(
+    height = 350, 
+    yaxis = list(title = ""),
+    xaxis = list(title = ""),
+    hovermode = "compare"
+  )
+}
+})
+```
+
+Row
+-------------------------------------
+
+### `r valueBox(value =  tags$p('Indicadores de Leitos - Media Movel 7 Dias (MM7)', style = "font-size: 125%; font-weight: bold;"))`
+
+```{r sis saude internacoes geres}
+
+shiny::radioButtons(inputId = 'radioSS6', 'Indicador', c('Leitos', 'Ocupacao', 'Internacao'), inline = T)
+
+selectizeInput('geres_internacoes', 'Geres', choices = sort(as.character(unique(internacoes_geres$geres))), selected = 'I GERES')
+
+renderPlotly({
+ 
+  x <- leitos_geres %>% filter(geres == input$geres_internacoes)
+  y <- internacoes_geres %>% filter(geres == input$geres_internacoes)
+  
+  if (input$radioSS6 != "Internacao") {
+    if (input$radioSS6 == "Leitos") {
+plotly::plot_ly(data = x) %>%
+  plotly::add_trace(
+    x = ~data,
+    y = ~ceiling(totalGERALMM7),
+    type = 'bar',
+    textposition = 'outside',
+    name = "Total",
+    line = list(color = "orange"),
+    marker = list(color = "orange")
+  ) %>%
+  plotly::add_trace(
+    x = ~data,
+    y = ~ceiling(totalUTIMM7),
+    type = 'scatter', mode = 'lines',
+    textposition = 'outside',
+    name = "UTI",
+    line = list(color = "red"),
+    marker = list(color = "red")
+  ) %>%
+  plotly::add_trace(
+    x = ~data,
+    y = ~ceiling(totalENFMM7),
+    type = 'scatter', mode = 'lines',
+    textposition = 'outside',
+    name = "ENFERMARIA",
+    line = list(color = "blue"),
+    marker = list(color = "blue")
+  ) %>%
+  plotly::layout(
+    height = 350, 
+    yaxis = list(title = ""),
+    xaxis = list(title = ""),
+    hovermode = "compare"
+  )
+    }
+else {
+plotly::plot_ly(data = x) %>%
+  plotly::add_trace(
+    x = ~data,
+    y = ~txTOTALMM7,
+    type = 'bar',
+    textposition = 'outside',
+    name = "Total",
+    line = list(color = "orange"),
+    marker = list(color = "orange")
+  ) %>%
+    plotly::add_trace(
+    x = ~data,
+    y = ~txUTIMM7,
+    type = 'scatter', mode = 'lines',
+    textposition = 'outside',
+    name = "UTI",
+    line = list(color = "red"),
+    marker = list(color = "red")
+  ) %>%
+  plotly::add_trace(
+    x = ~data,
+    y = ~txENFMM7,
+    type = 'scatter', mode = 'lines',
+    textposition = 'outside',
+    name = "ENFERMARIA",
+    line = list(color = "blue"),
+    marker = list(color = "blue")
+  ) %>%
+  plotly::layout(
+    height = 350, 
+    yaxis = list(title = ""),
+    xaxis = list(title = ""),
+    hovermode = "compare"
+  )
+}
+  }
+else {
+  plotly::plot_ly(data = y) %>%
+  plotly::add_trace(
+    x = ~data,
+    y = ~ceiling(intGLMM7),
+    type = 'bar',
+    textposition = 'outside',
+    name = "Total",
+    line = list(color = "orange"),
+    marker = list(color = "orange")
+  ) %>%
+  plotly::add_trace(
+    x = ~data,
+    y = ~ceiling(intUTIMM7),
+    type = 'scatter', mode = 'lines',
+    textposition = 'outside',
+    name = "UTI",
+    line = list(color = "red"),
+    marker = list(color = "red")
+  ) %>%
+  plotly::add_trace(
+    x = ~data,
+    y = ~ceiling(intENFMM7),
+    type = 'scatter', mode = 'lines',
+    textposition = 'outside',
+    name = "ENFERMARIA",
+    line = list(color = "blue"),
+    marker = list(color = "blue")
+  ) %>%
+  plotly::layout(
+    height = 350, 
+    yaxis = list(title = ""),
+    xaxis = list(title = ""),
+    hovermode = "compare"
+  )
+}
+})
+```
+
+Row
+-------------------------------------
+
+### `r valueBox(value =  tags$p('Solicitacoes | Leitos', style = "font-size: 125%;"))`
+
+```{r sist saude municipio}
+valueBox('Municipio', color = 'orange')
+```
+
+Row
+-------------------------------------
+
+### `r valueBox(value =  tags$p('Indicadores de Solicitacoes - Media Movel 7 Dias (MM7)', style = "font-size: 125%; font-weight: bold;"))`
+
+```{r sis saude solicitacoes municipio}
+
+shiny::radioButtons(inputId = 'radioSS7', 'Indicador', c('Solicitacoes', 'Fila', 'Fila Nova'), inline = T)
+
+selectizeInput('municipio_solicitacoes', 'Municipio', choices = sort(as.character(unique(solicitacoes_municipio_gb$municipio))), selected = 'RECIFE')
+
+renderPlotly({
+ 
+  x <- solicitacoes_municipio_gb %>% filter(municipio == input$municipio_solicitacoes)
+  y <- fila_total_municipio_gb %>% filter(municipio == input$municipio_solicitacoes)
+  z <- fila_nova_municipio_gb %>% filter(municipio == input$municipio_solicitacoes)
+  
+  if (input$radioSS7 != "Fila Nova") {
+    if (input$radioSS7 == "Solicitacoes") {
+plotly::plot_ly(data = x) %>%
+  plotly::add_trace(
+    x = ~data,
+    y = ~ceiling(geralMM7),
+    type = 'bar',
+    textposition = 'outside',
+    name = "Total",
+    line = list(color = "orange"),
+    marker = list(color = "orange")
+  ) %>%
+  plotly::add_trace(
+    x = ~data,
+    y = ~ceiling(utiMM7),
+    type = 'scatter', mode = 'lines',
+    textposition = 'outside',
+    name = "UTI",
+    line = list(color = "red"),
+    marker = list(color = "red")
+  ) %>%
+  plotly::add_trace(
+    x = ~data,
+    y = ~ceiling(enfMM7),
+    type = 'scatter', mode = 'lines',
+    textposition = 'outside',
+    name = "ENFERMARIA",
+    line = list(color = "blue"),
+    marker = list(color = "blue")
+  ) %>%
+  plotly::layout(
+    height = 350, 
+    yaxis = list(title = ""),
+    xaxis = list(title = ""),
+    hovermode = "compare"
+  )
+    }
+else {
+plotly::plot_ly(data = y) %>%
+  plotly::add_trace(
+    x = ~data,
+    y = ~ceiling(geralMM7),
+    type = 'bar',
+    textposition = 'outside',
+    name = "Total",
+    line = list(color = "orange"),
+    marker = list(color = "orange")
+  ) %>%
+    plotly::add_trace(
+    x = ~data,
+    y = ~ceiling(utiMM7),
+    type = 'scatter', mode = 'lines',
+    textposition = 'outside',
+    name = "UTI",
+    line = list(color = "red"),
+    marker = list(color = "red")
+  ) %>%
+  plotly::add_trace(
+    x = ~data,
+    y = ~ceiling(enfMM7),
+    type = 'scatter', mode = 'lines',
+    textposition = 'outside',
+    name = "ENFERMARIA",
+    line = list(color = "blue"),
+    marker = list(color = "blue")
+  ) %>%
+  plotly::layout(
+    height = 350, 
+    yaxis = list(title = ""),
+    xaxis = list(title = ""),
+    hovermode = "compare"
+  )
+}
+  }
+else {
+  plotly::plot_ly(data = z) %>%
+  plotly::add_trace(
+    x = ~data,
+    y = ~ceiling(geralMM7),
+    type = 'bar',
+    textposition = 'outside',
+    name = "Total",
+    line = list(color = "orange"),
+    marker = list(color = "orange")
+  ) %>%
+  plotly::add_trace(
+    x = ~data,
+    y = ~ceiling(utiMM7),
+    type = 'scatter', mode = 'lines',
+    textposition = 'outside',
+    name = "UTI",
+    line = list(color = "red"),
+    marker = list(color = "red")
+  ) %>%
+  plotly::add_trace(
+    x = ~data,
+    y = ~ceiling(enfMM7),
+    type = 'scatter', mode = 'lines',
+    textposition = 'outside',
+    name = "ENFERMARIA",
+    line = list(color = "blue"),
+    marker = list(color = "blue")
+  ) %>%
+  plotly::layout(
+    height = 350, 
+    yaxis = list(title = ""),
+    xaxis = list(title = ""),
+    hovermode = "compare"
+  )
+}
+})
+```
+
+Row
+-------------------------------------
+
+### `r valueBox(value =  tags$p('Indicadores de Leitos - Media Movel 7 Dias (MM7)', style = "font-size: 125%; font-weight: bold;"))`
+
+```{r sis saude internacoes municipio}
+
+shiny::radioButtons(inputId = 'radioSS8', 'Indicador', c('Leitos', 'Ocupacao', 'Internacao'), inline = T)
+
+selectizeInput('municipio_internacoes', 'Municipio', choices = sort(as.character(unique(internacoes_municipio$municipio))), selected = 'RECIFE')
+
+renderPlotly({
+ 
+  x <- municipios_leitos %>% filter(municipio == input$municipio_internacoes)
+  y <- internacoes_municipio %>% filter(municipio == input$municipio_internacoes)
+  
+  if (input$radioSS8 != "Internacao") {
+    if (input$radioSS8 == "Leitos") {
+plotly::plot_ly(data = x) %>%
+  plotly::add_trace(
+    x = ~data,
+    y = ~ceiling(totalGERALMM7),
+    type = 'bar',
+    textposition = 'outside',
+    name = "Total",
+    line = list(color = "orange"),
+    marker = list(color = "orange")
+  ) %>%
+  plotly::add_trace(
+    x = ~data,
+    y = ~ceiling(totalUTIMM7),
+    type = 'scatter', mode = 'lines',
+    textposition = 'outside',
+    name = "UTI",
+    line = list(color = "red"),
+    marker = list(color = "red")
+  ) %>%
+  plotly::add_trace(
+    x = ~data,
+    y = ~ceiling(totalENFMM7),
+    type = 'scatter', mode = 'lines',
+    textposition = 'outside',
+    name = "ENFERMARIA",
+    line = list(color = "blue"),
+    marker = list(color = "blue")
+  ) %>%
+  plotly::layout(
+    height = 350, 
+    yaxis = list(title = ""),
+    xaxis = list(title = ""),
+    hovermode = "compare"
+  )
+    }
+else {
+plotly::plot_ly(data = x) %>%
+  plotly::add_trace(
+    x = ~data,
+    y = ~txTOTALMM7,
+    type = 'bar',
+    textposition = 'outside',
+    name = "Total",
+    line = list(color = "orange"),
+    marker = list(color = "orange")
+  ) %>%
+    plotly::add_trace(
+    x = ~data,
+    y = ~txUTIMM7,
+    type = 'scatter', mode = 'lines',
+    textposition = 'outside',
+    name = "UTI",
+    line = list(color = "red"),
+    marker = list(color = "red")
+  ) %>%
+  plotly::add_trace(
+    x = ~data,
+    y = ~txENFMM7,
+    type = 'scatter', mode = 'lines',
+    textposition = 'outside',
+    name = "ENFERMARIA",
+    line = list(color = "blue"),
+    marker = list(color = "blue")
+  ) %>%
+  plotly::layout(
+    height = 350, 
+    yaxis = list(title = ""),
+    xaxis = list(title = ""),
+    hovermode = "compare"
+  )
+}
+  }
+else {
+  plotly::plot_ly(data = y) %>%
+  plotly::add_trace(
+    x = ~data,
+    y = ~ceiling(intGLMM7),
+    type = 'bar',
+    textposition = 'outside',
+    name = "Total",
+    line = list(color = "orange"),
+    marker = list(color = "orange")
+  ) %>%
+  plotly::add_trace(
+    x = ~data,
+    y = ~ceiling(intUTIMM7),
+    type = 'scatter', mode = 'lines',
+    textposition = 'outside',
+    name = "UTI",
+    line = list(color = "red"),
+    marker = list(color = "red")
+  ) %>%
+  plotly::add_trace(
+    x = ~data,
+    y = ~ceiling(intENFMM7),
+    type = 'scatter', mode = 'lines',
+    textposition = 'outside',
+    name = "ENFERMARIA",
+    line = list(color = "blue"),
+    marker = list(color = "blue")
+  ) %>%
+  plotly::layout(
+    height = 350, 
+    yaxis = list(title = ""),
+    xaxis = list(title = ""),
+    hovermode = "compare"
+  )
+}
+})
+```
+
+Analises {data-icon="fa-diagnoses" data-orientation=rows}
+===================================== 
+
+Row
+-------------------------------------
+
+### `r valueBox(value =  tags$p('Predicoes | R0 (Numero Basico de Reproducao) | Rt (Numero Reprodutivo Efetivo)', style = "font-size: 115%;"))`
+
+```{r}
+valueBox('Pernambuco', color = 'purple')
+```
+
+Row
+-------------------------------------
+
+### `r valueBox(value =  tags$p(paste('Modelagens Matematica', ''), style = "font-size: 125%; font-weight: bold;"))`
+
+```{r}
+
+shiny::radioButtons(inputId = 'radioAn1', 'Modelo', c('Casos Totais', 'Casos por Milhao', 'Rt'), inline = T)
+
+renderPlotly({
+
+  if (input$radioAn1 != "Rt") {
+    if (input$radioAn1 == "Casos Totais") {
+plotly::plot_ly(data = pred_ll) %>%
+  plotly::add_trace(
+    x = ~data,
+    y = ~ceiling(predicao),
+    type = 'scatter', mode = 'lines',
+    name = "Predicao",
+    line = list(color = "blue"),
+    marker = list(color = "blue")
+  )  %>%
+  add_trace(
+    x = ~data,
+    y = ~ceiling(confirmados),
+    type = 'scatter', mode = 'lines',
+    name = "Real",
+    line = list(color = "red"),
+    marker = list(color = "red")
+  ) %>%
+  plotly::layout(
+    height = '380',
+    yaxis = list(title = "Casos Confirmados"),
+    xaxis = list(title = "Data do Boletim"),
+    hovermode = "compare"
+  )
+    }
+else {
+  plotly::plot_ly(data = pred_ll) %>%
+  add_trace(
+    x = ~data,
+    y = ceiling(espanhaCasosMilhao),
+    type = 'scatter', mode = 'lines',
+    name = "Espanha",
+    line = list(color = "comsilk", dash = 'dash')
+    )  %>%
+  add_trace(
+    x = ~data,
+    y = ceiling(belgicaCasosMilhao),
+    type = 'scatter', mode = 'lines',
+    name = "Belgica",
+    line = list(color = "purple", dash = 'dash')
+    )  %>%
+  add_trace(
+    x = ~data,
+    y = ceiling(brasilCasosMilhao),
+    type = 'scatter', mode = 'lines',
+    name = "Brasil",
+    line = list(color = "cyan", dash = 'dash')
+    )  %>%
+  add_trace(
+    x = ~data,
+    y = ~ceiling(predicao/9.55),
+    type = 'scatter', mode = 'lines',
+    name = "Predicao",
+    line = list(color = "blue"),
+    marker = list(color = "blue")
+  )  %>%
+  add_trace(
+    x = ~data,
+    y = ~ceiling(confirmados/9.55),
+    type = 'scatter', mode = 'markers',
+    name = "Real",
+    line = list(color = "red"),
+    marker = list(color = "red")
+  ) %>%
+  plotly::layout(
+    height = '380',
+    yaxis = list(title = "Casos Confirmados por Milhao de Habitantes"),
+    xaxis = list(title = "Data do Boletim"),
+    hovermode = "compare"
+  )
+}
+  }
+else {
+  fig
+}
+})
+```
+
+Row
+-------------------------------------
+
+### `r valueBox(value =  tags$p('Predicoes | R0 (Numero Basico de Reproducao) | Rt (Numero Reprodutivo Efetivo)', style = "font-size: 115%;"))`
+
+```{r}
+valueBox('Macrorregiao', color = 'purple')
+```
+
+Row
+-------------------------------------
+
+### `r valueBox(value =  tags$p('Modelagens Matematicas', style = "font-size: 125%; font-weight: bold;"))`
+
+```{r analises rt macro}
+
+selectizeInput('macro_rt', 'Macrorregiao', choices = sort(as.character(unique(confirmados_macro$macro))), selected = 'I - METROPOLITANA')
+
+renderPlotly({
+ 
+  x <- confirmados_macro %>% filter(macro == input$macro_rt)
+  
+  macro_confirmados_rt <- x %>% compute_likelihood() %>% compute_posterior() %>% estimate_rt()
+
+colnames(macro_confirmados_rt) <- c('data', 'rt', 'rt_min', 'rt_max')
+
+p <- ggplot(macro_confirmados_rt, aes(y=rt, x=data)) + geom_line(colour = 'blue1', linetype = "dashed") + geom_point(colour = 'blue') + geom_ribbon(aes(ymin=rt_min, ymax=rt_max, x=data), alpha = 0.2) + scale_colour_manual("", values="blue") + scale_fill_manual("", values="blue1") + geom_hline(yintercept=1, linetype = "dashed")
+
+fig <- ggplotly(p) %>%
+  plotly::layout(
+    height = '380',
+    title = '',
+    yaxis = list(title = "Rt - Numero Reprodutivo Efetivo"),
+    xaxis = list(title = ""),
+    hovermode = "compare"
+  )
+
+fig
+})
+```
+
+Row
+-------------------------------------
+
+### Explicacao Geral do Modelo
+
+Modelos Log Logistico
+
+Baseado em curvas logisticas (curvas em S) que foram utilizadas inicialmente para o estudo de crescimento populacional e depois para analise de sobrevivencia. 
+
+O estagio inicial de crescimento populacional e linear; depois, transforma-se, aproximadamente, em exponencial. Conforme a saturacao se inicia, o crescimento diminui; e, na maturidade, o crescimento para. Ou seja, desenho da curva parece um S. 
+
+Esse comportamento aproxima-se do comportamento do virus, uma vez que ha um limite para o total de pessoas que pode ser infectada em um determinado lugar - sendo o limite global o tamanho da propria populacao. 
+
+Nesse caso, os calculos sao feitos para estimar a o valor no ponto medio (ponto de inflexao), o valor no ponto maximo e a declividade da curva. 
+
+Para o caso de epidemias, e preferivel usar a versao log-logistica da curva S, pois ela esta definida apenas para valores positivos, o que tende a melhorar as predicoes, ja que no mundo real todos os dados analisados (tempo, confirmados, recuperados, obitos, etc.) sao positivos.
+
+
+<!-- Row -->
+<!-- ------------------------------------- -->
+
+<!-- ### `r valueBox(value =  tags$p(paste('Log Logistico - Obitos Confirmados', ''), style = "font-size: 125%; font-weight: bold;"))` -->
+
+<!-- ```{r} -->
+<!-- plotly::plot_ly(data = pred_ll) %>% -->
+<!--   plotly::add_trace( -->
+<!--     x = ~data, -->
+<!--     y = ~ceiling(predicao * 0.05), -->
+<!--     type = 'scatter', mode = 'lines', -->
+<!--     name = "Cenário Pessimista", -->
+<!--     line = list(color = "orange"), -->
+<!--     marker = list(color = "orange") -->
+<!--   )  %>% -->
+<!--   plotly::add_trace( -->
+<!--     x = ~data, -->
+<!--     y = ~ceiling(predicao * 0.03), -->
+<!--     type = 'scatter', mode = 'lines', -->
+<!--     name = "Cenário Moderado", -->
+<!--     line = list(color = "blue"), -->
+<!--     marker = list(color = "blue") -->
+<!--   )  %>% -->
+<!--   plotly::add_trace( -->
+<!--     x = ~data, -->
+<!--     y = ~ceiling(predicao * 0.02), -->
+<!--     type = 'scatter', mode = 'lines', -->
+<!--     name = "Cenário Otimista", -->
+<!--     line = list(color = "green"), -->
+<!--     marker = list(color = "green") -->
+<!--   )  %>% -->
+<!--   add_trace( -->
+<!--     x = ~data, -->
+<!--     y = ~ceiling(obitos), -->
+<!--     type = 'scatter', mode = 'lines', -->
+<!--     name = "Real", -->
+<!--     line = list(color = "black"), -->
+<!--     marker = list(color = "black") -->
+<!--   ) %>% -->
+<!--   plotly::layout( -->
+<!--     yaxis = list(title = "Obitos Confirmados"), -->
+<!--     xaxis = list(title = "Data do Boletim"), -->
+<!--     hovermode = "compare" -->
+<!--   ) -->
+<!-- ``` -->
