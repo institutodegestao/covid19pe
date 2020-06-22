@@ -1919,7 +1919,7 @@ valueBox('Pernambuco', color = 'purple')
 Row
 -------------------------------------
 
-### `r valueBox(value =  tags$p(paste('Modelagens Matematica', ''), style = "font-size: 125%; font-weight: bold;"))`
+### `r valueBox(value =  tags$p(paste('Modelagens Matematicas - Casos', ''), style = "font-size: 125%; font-weight: bold;"))`
 
 ```{r}
 
@@ -1987,6 +1987,96 @@ else {
   add_trace(
     x = ~data,
     y = ~ceiling(confirmados/9.55),
+    type = 'scatter', mode = 'markers',
+    name = "Real",
+    line = list(color = "red"),
+    marker = list(color = "red")
+  ) %>%
+  plotly::layout(
+    height = '380',
+    yaxis = list(title = "Casos Confirmados por Milhao de Habitantes"),
+    xaxis = list(title = "Data do Boletim"),
+    hovermode = "compare"
+  )
+}
+  }
+else {
+  fig
+}
+})
+```
+
+Row
+-------------------------------------
+
+### `r valueBox(value =  tags$p(paste('Modelagens Matematicas - Obitos', ''), style = "font-size: 125%; font-weight: bold;"))`
+
+```{r}
+
+shiny::radioButtons(inputId = 'radioAn2', 'Modelo', c('Casos Totais', 'Casos por Milhao', 'Rt'), inline = T)
+
+renderPlotly({
+
+  if (input$radioAn2 != "Rt") {
+    if (input$radioAn2 == "Casos Totais") {
+plotly::plot_ly(data = pred_ll) %>%
+  plotly::add_trace(
+    x = ~data,
+    y = ~ceiling(predicaoOb),
+    type = 'scatter', mode = 'lines',
+    name = "Predicao",
+    line = list(color = "blue"),
+    marker = list(color = "blue")
+  )  %>%
+  add_trace(
+    x = ~data,
+    y = ~ceiling(obitos),
+    type = 'scatter', mode = 'lines',
+    name = "Real",
+    line = list(color = "red"),
+    marker = list(color = "red")
+  ) %>%
+  plotly::layout(
+    height = '380',
+    yaxis = list(title = "Obitos Confirmados"),
+    xaxis = list(title = "Data do Boletim"),
+    hovermode = "compare"
+  )
+    }
+else {
+  plotly::plot_ly(data = pred_ll) %>%
+  add_trace(
+    x = ~data,
+    y = ceiling(espanhaMortesMilhao),
+    type = 'scatter', mode = 'lines',
+    name = "Espanha",
+    line = list(color = "comsilk", dash = 'dash')
+    )  %>%
+  add_trace(
+    x = ~data,
+    y = ceiling(belgicaMortesMilhao),
+    type = 'scatter', mode = 'lines',
+    name = "Belgica",
+    line = list(color = "purple", dash = 'dash')
+    )  %>%
+  add_trace(
+    x = ~data,
+    y = ceiling(brasilMortesMilhao),
+    type = 'scatter', mode = 'lines',
+    name = "Brasil",
+    line = list(color = "cyan", dash = 'dash')
+    )  %>%
+  add_trace(
+    x = ~data,
+    y = ~ceiling(predicaoOb/9.55),
+    type = 'scatter', mode = 'lines',
+    name = "Predicao",
+    line = list(color = "blue"),
+    marker = list(color = "blue")
+  )  %>%
+  add_trace(
+    x = ~data,
+    y = ~ceiling(obitos/9.55),
     type = 'scatter', mode = 'markers',
     name = "Real",
     line = list(color = "red"),
