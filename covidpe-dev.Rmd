@@ -1,0 +1,457 @@
+---
+title: "Sala de Situacao - COVID-19 PE"
+output:
+   flexdashboard::flex_dashboard:
+    # orientation: rows
+    vertical_layout: scroll
+    theme: lumen
+runtime: shiny
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+library(flexdashboard)
+library(shiny)
+source('./global.R')
+```
+
+<!--- Inicio Aba UTI por Especialidade -->
+
+Resultados {data-icon="fa-chart-line"}
+===================================== 
+
+Column
+-------------------------------------
+
+### `r valueBox(value =  tags$p('Solicitacoes | Obitos | Confirmados', style = "font-size: 125%;"))`
+
+```{r}
+valueBox('Resultados', color = 'green')
+```
+
+### `r valueBox(value =  tags$p('Solicitacoes x Obitos', style = "font-size: 125%; font-weight: bold;"))`
+
+```{r descritiva obitos solicitacoes mm}
+plotly::plot_ly(data = base_geral) %>%
+  add_trace(
+    x = ~data,
+    y = ~solicitacoes_mm10,
+    type = 'scatter', mode = 'lines',
+    name = 'Solicitacao',
+    line = list(color = "blue"),
+    marker = list(color = "blue")
+  )  %>%
+  add_trace(
+    x = ~data,
+    y = ~obitos_mm10,
+    type = 'scatter', mode = 'lines',
+    name = "Obito",
+    line = list(color = "red"),
+    marker = list(color = "red")
+  )  %>%
+  plotly::layout(
+    yaxis = list(title = "Media Movel 7 Dias (MM7)"),
+    xaxis = list(title = "Data do Fato"),
+    hovermode = "compare"
+  )
+```
+
+### `r valueBox(value =  tags$p('Solicitacoes x Obitos - Geres', style = "font-size: 125%; font-weight: bold;"))`
+
+```{r}
+selectizeInput('geres_res', 'Geres', choices = sort(as.character(unique(base_geres$geres))), selected = 'RECIFE')
+
+renderPlotly({
+
+  x <- base_geres %>% filter(geres==input$geres_res)
+  
+plotly::plot_ly(data = x) %>%
+  plotly::add_trace(
+    x = ~data,
+    y = ~solicitacoesMM7,
+    type = 'scatter', mode = 'lines',
+    textposition = 'outside',
+    name = "Solicitacoes",
+    line = list(color = "blue"),
+    marker = list(color = "blue")
+  ) %>%
+  plotly::add_trace(
+    x = ~data,
+    y = ~obitosMM7,
+    type = 'scatter', mode = 'lines',
+    textposition = 'outside',
+    name = "Obitos",
+    line = list(color = "red"),
+    marker = list(color = "red")
+  ) %>%
+  plotly::layout(
+    height = 350,
+    yaxis = list(title = "Media Movel 7 Dias (MM7)"),
+    xaxis = list(title = "Data do Fato"),
+    hovermode = "compare"
+  )
+
+})
+```
+
+### `r valueBox(value =  tags$p('Solicitacoes x Obitos - Municipios', style = "font-size: 125%; font-weight: bold;"))`
+
+```{r}
+selectizeInput('mun_res', 'Municipio', choices = sort(as.character(unique(base_municipios$municipio))), selected = 'RECIFE')
+
+renderPlotly({
+
+  x <- base_municipios %>% filter(municipio==input$mun_res)
+  
+plotly::plot_ly(data = x) %>%
+  plotly::add_trace(
+    x = ~data,
+    y = ~solicitacoesMM7,
+    type = 'scatter', mode = 'lines',
+    textposition = 'outside',
+    text = ~paste(as.integer(solicitacoesPct*100),'%'),
+    name = "Solicitacoes",
+    line = list(color = "blue"),
+    marker = list(color = "blue")
+  ) %>%
+  add_trace(
+    x = ~data,
+    y = ~solicitacoesDia,
+    type = 'bar', 
+    textposition = 'outside',
+    name = "Solicitacoes por Dia",
+    line = list(color = "purple"),
+    marker = list(color = "purple")
+  ) %>%
+  plotly::add_trace(
+    x = ~data,
+    y = ~obitosMM7,
+    type = 'scatter', mode = 'lines',
+    textposition = 'outside',
+    text = ~paste(as.integer(obitosPct*100),'%'),
+    name = "Obitos",
+    line = list(color = "red"),
+    marker = list(color = "red")
+  ) %>%
+  plotly::add_trace(
+    x = ~data,
+    y = ~obitosDia,
+    type = 'bar',
+    textposition = 'outside',
+    name = "Obitos por Dia",
+    line = list(color = "orange"),
+    marker = list(color = "orange")
+  ) %>%
+  plotly::layout(
+    height = 350,
+    yaxis = list(title = "Media Movel 7 Dias (MM7) | Total por Dia"),
+    xaxis = list(title = "Data do Fato"),
+    hovermode = "compare"
+  )
+
+})
+```
+
+Processo {data-icon="fa-chart-bar"}
+===================================== 
+
+Column
+-------------------------------------
+
+### `r valueBox(value =  tags$p('Leitos por Dia | Testes por Dia', style = "font-size: 125%;"))`
+
+```{r}
+valueBox('Recursos', color = 'orange')
+```
+
+### `r valueBox(value =  tags$p('Testes', style = "font-size: 125%; font-weight: bold;"))`
+
+```{r}
+plotly::plot_ly(data = quadro_sint) %>%
+  add_trace(
+    x = ~data,
+    y = ~testesMM7,
+    type = 'scatter', mode = 'lines',
+    name = 'Testes por dia do Resultado',
+    line = list(color = "blue"),
+    marker = list(color = "blue")
+  )  %>%
+  plotly::layout(
+    yaxis = list(title = "Media Movel 7 Dias (MM7)"),
+    xaxis = list(title = "Data"),
+    hovermode = "compare"
+  )
+```
+
+### `r valueBox(value =  tags$p('Leitos Totais', style = "font-size: 125%; font-weight: bold;"))`
+
+```{r}
+plotly::plot_ly(data = leitos_pernambuco) %>%
+  plotly::add_trace(
+    x = ~data,
+    y = ~totalGERALMM7,
+    type = 'bar',
+    textposition = 'outside',
+    name = "Total",
+    line = list(color = "orange"),
+    marker = list(color = "orange")
+  ) %>%
+  plotly::add_trace(
+    x = ~data,
+    y = ~totalUTIMM7,
+    type = 'scatter', mode = 'lines',
+    textposition = 'outside',
+    name = "UTI",
+    line = list(color = "red"),
+    marker = list(color = "red")
+  ) %>%
+  plotly::add_trace(
+    x = ~data,
+    y = ~totalENFMM7,
+    type = 'scatter', mode = 'lines',
+    textposition = 'outside',
+    name = "ENFERMARIA",
+    line = list(color = "blue"),
+    marker = list(color = "blue")
+  ) %>%
+  plotly::layout(
+    height = 350, 
+    title = 'Leitos Totais',
+    yaxis = list(title = "Media Movel 7 Dias (MM7)"),
+    xaxis = list(title = "Data"),
+    hovermode = "compare"
+  )
+```
+
+### `r valueBox(value =  tags$p('Leitos Totais - Municipio', style = "font-size: 125%; font-weight: bold;"))`
+
+```{r}
+selectizeInput('mun_leito', 'Municipio', choices = sort(as.character(unique(municipios_leitos$municipio))), selected = 'RECIFE')
+
+renderPlotly({
+
+  x <- municipios_leitos %>% filter(municipio==input$mun_leito)
+  
+plotly::plot_ly(data = x) %>%
+  plotly::add_trace(
+    x = ~data,
+    y = ~totalGERALMM7,
+    type = 'bar',
+    textposition = 'outside',
+    name = "Total",
+    line = list(color = "orange"),
+    marker = list(color = "orange")
+  ) %>%
+  plotly::add_trace(
+    x = ~data,
+    y = ~totalUTIMM7,
+    type = 'scatter', mode = 'lines',
+    textposition = 'outside',
+    name = "UTI",
+    line = list(color = "red"),
+    marker = list(color = "red")
+  ) %>%
+  plotly::add_trace(
+    x = ~data,
+    y = ~totalENFMM7,
+    type = 'scatter', mode = 'lines',
+    textposition = 'outside',
+    name = "ENFERMARIA",
+    line = list(color = "blue"),
+    marker = list(color = "blue")
+  ) %>%
+  plotly::layout(
+    height = 350, 
+    title = 'Leitos Totais - Municipio',
+    yaxis = list(title = "Media Movel 7 Dias (MM7)"),
+    xaxis = list(title = "Data"),
+    hovermode = "compare"
+  )
+
+})
+```
+
+### `r valueBox(value =  tags$p('Taxa de Ocupacao por Dia | Taxa de Confirmados por Dia', style = "font-size: 125%;"))`
+
+```{r}
+valueBox('Eficiencia', color = 'orange')
+```
+
+### `r valueBox(value =  tags$p('Taxa de Ocupação por Dia', style = "font-size: 125%; font-weight: bold;"))`
+
+```{r}
+plotly::plot_ly(data = leitos_pernambuco) %>%
+  plotly::add_trace(
+    x = ~data,
+    y = ~txTOTALMM7,
+    type = 'bar',
+    textposition = 'outside',
+    name = "Total",
+    line = list(color = "orange"),
+    marker = list(color = "orange")
+  ) %>%
+    plotly::add_trace(
+    x = ~data,
+    y = ~txUTIMM7,
+    type = 'scatter', mode = 'lines',
+    textposition = 'outside',
+    name = "UTI",
+    line = list(color = "red"),
+    marker = list(color = "red")
+  ) %>%
+  plotly::add_trace(
+    x = ~data,
+    y = ~txENFMM7,
+    type = 'scatter', mode = 'lines',
+    textposition = 'outside',
+    name = "ENFERMARIA",
+    line = list(color = "blue"),
+    marker = list(color = "blue")
+  ) %>%
+  plotly::layout(
+    height = 350, 
+    title = 'Taxa de Ocupação',
+    yaxis = list(title = "Media Movel 7 Dias (MM7)"),
+    xaxis = list(title = "Data"),
+    hovermode = "compare"
+  )
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+### `r valueBox(value =  tags$p('Taxa de Confirmados por Dia', style = "font-size: 125%; font-weight: bold;"))`
+
+```{r}
+plotly::plot_ly(data = conf_desc_pe_rel) %>%
+  plotly::add_trace(
+    x = ~data,
+    y = ~CONFIRMADO,
+    type = 'scatter', mode = 'lines',
+    text = ~paste(as.integer(CONFIRMADO/DESCARTADO*100),'%'),
+    textposition = 'outside',
+    name = "Confirmados",
+    line = list(color = "red"),
+    marker = list(color = "red")
+  ) %>%
+  plotly::add_trace(
+    x = ~data,
+    y = ~DESCARTADO,
+    type = 'scatter', mode = 'lines',
+    textposition = 'outside',
+    name = "Descartados",
+    line = list(color = "blue"),
+    marker = list(color = "blue")
+  ) %>%
+  plotly::layout(
+    height = 350, 
+    yaxis = list(title = "Valores Totais"),
+    xaxis = list(title = "Data do Boletim"),
+    hovermode = "compare"
+  )
+```
+
+### `r valueBox(value =  tags$p('Internacoes por Dia | Fila Nova por Dia', style = "font-size: 125%;"))`
+
+```{r}
+valueBox('Produtos', color = 'orange')
+```
+
+### `r valueBox(value =  tags$p('Fila Nova - Municipios', style = "font-size: 125%; font-weight: bold;"))`
+
+```{r}
+selectizeInput('mun_fn', 'Municipio', choices = sort(as.character(unique(municipios_fila_nova$municipio))), selected = 'RECIFE')
+
+renderPlotly({
+
+  x <- municipios_fila_nova %>% filter(municipio==input$mun_fn)
+  
+plotly::plot_ly(data = x) %>%
+  plotly::add_trace(
+    x = ~data,
+    y = ~fnTOTALMM7,
+    type = 'bar',
+    textposition = 'outside',
+    name = "Total",
+    line = list(color = "orange"),
+    marker = list(color = "orange")
+  ) %>%
+  plotly::add_trace(
+    x = ~data,
+    y = ~fnUTIMM7,
+    type = 'scatter', mode = 'lines',
+    textposition = 'outside',
+    name = "UTI",
+    line = list(color = "red"),
+    marker = list(color = "red")
+  ) %>%
+  plotly::add_trace(
+    x = ~data,
+    y = ~fnENFMM7,
+    type = 'scatter', mode = 'lines',
+    textposition = 'outside',
+    name = "ENFERMARIA",
+    line = list(color = "blue"),
+    marker = list(color = "blue")
+  ) %>%
+  plotly::layout(
+    height = 350, 
+    yaxis = list(title = "Media Movel 7 Dias (MM7)"),
+    xaxis = list(title = "Data"),
+    hovermode = "compare"
+  )
+
+})
+```
+
+Setores {data-icon="fa-tasks"}
+===================================== 
+
+Analises {data-icon="fa-diagnoses"}
+===================================== 
+
+### `r valueBox(value =  tags$p('Log Logistico | SIR', style = "font-size: 125%;"))`
+
+```{r}
+valueBox('Modelos Preditivos', color = 'purple')
+```
+
+### `r valueBox(value =  tags$p(paste('Log Logistico - ', 'Baseado em curvas logisticas (curvas em S) que foram utilizadas inicialmente para o estudo de crescimento populacional e depois para analise de sobrevivencia. Os calculos sao feitos para estimar o valor no ponto medio (ponto de inflexao), o valor no ponto maximo e a declividade da curva'), style = "font-size: 125%; font-weight: bold;"))`
+
+```{r}
+plotly::plot_ly(data = pred_ll) %>%
+  plotly::add_trace(
+    x = ~data,
+    y = ~predicao,
+    type = 'scatter', mode = 'lines',
+    name = "predicao",
+    line = list(color = "blue"),
+    marker = list(color = "blue")
+  )  %>%
+  add_trace(
+    x = ~data,
+    y = ~confirmados,
+    type = 'scatter', mode = 'lines',
+    name = "real",
+    line = list(color = "red"),
+    marker = list(color = "red")
+  ) %>%
+  plotly::layout(
+    yaxis = list(title = "Real x Predicao"),
+    xaxis = list(title = "Data"),
+    legend = list(x = 0.1, y = 0.9),
+    hovermode = "compare"
+  )
+```
+
+Impactos {data-icon="fa-stream"}
+===================================== 
