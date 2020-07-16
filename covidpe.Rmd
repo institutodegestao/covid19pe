@@ -2013,12 +2013,11 @@ Row
 
 ```{r}
 
-shiny::radioButtons(inputId = 'radioAn2', 'Modelo', c('Casos Totais', 'Casos por Milhao', 'Rt'), inline = T)
+shiny::radioButtons(inputId = 'radioAn2', 'Modelo', c('Obitos Totais', 'Obitos por Milhao'), inline = T)
 
 renderPlotly({
 
-  if (input$radioAn2 != "Rt") {
-    if (input$radioAn2 == "Casos Totais") {
+  if (input$radioAn2 == "Obitos Totais") {
 plotly::plot_ly(data = pred_ll) %>%
   plotly::add_trace(
     x = ~data,
@@ -2089,11 +2088,26 @@ else {
     hovermode = "compare"
   )
 }
-  }
-else {
-  fig
-}
 })
+```
+
+Row
+-------------------------------------
+
+### `r valueBox(value =  tags$p(paste('Modelagens Matematicas - Leitos UTI', ''), style = "font-size: 125%; font-weight: bold;"))`
+
+```{r}
+plotly::plot_ly(base_predicao_leitos) %>% plotly::add_trace(x = ~data, y = ~leitos_uti_ocupado, type = 'scatter', mode = 'markers', name = "Leitos Ocupados - Real") %>% add_trace(
+  x = ~data, 
+  y = ceiling(predict(modelo4, base_predicao_leitos)), 
+  name = "Leitos Ocupados - Estimado", mode = 'lines') %>% plotly::add_trace(
+    x = ~data, 
+    y = ~leitos_uti_disponivel, 
+    name = "Leitos Disponiveis", mode = 'markers') %>% layout(
+    title = 'Predicao de Leitos de UTI SRAG SUS em Pernambuco', 
+    xaxis = list(title = 'Data', showgrid = FALSE), 
+    yaxis = list(title = 'Leitos de UTI SRAG SUS Ocupados', showgrid = FALSE),
+    hovermode = "compare")
 ```
 
 Row
@@ -2137,66 +2151,19 @@ fig
 })
 ```
 
+Metadados {data-icon="fa-info"}
+=====================================
+
 Row
 -------------------------------------
 
-### Explicacao Geral do Modelo
+### Explicacao dos Modelos
 
-Modelos Log Logistico
+#### Como fizemos a predicao de casos e de obitos?
 
-Baseado em curvas logisticas (curvas em S) que foram utilizadas inicialmente para o estudo de crescimento populacional e depois para analise de sobrevivencia. 
+Com base em **curvas em S** (distribuicoes logisticas). Essas curvas foram utilizadas inicialmente para o estudo de crescimento populacional e depois para analise de sobrevivencia, analise de medicamentos e doencas. Nesse caso, os calculos sao feitos para estimar a o **valor no ponto medio** ou ponto de inflexao (que e quando a curva muda), o **valor no ponto maximo** e a **inclinacao da curva**. 
 
-O estagio inicial de crescimento populacional e linear; depois, transforma-se, aproximadamente, em exponencial. Conforme a saturacao se inicia, o crescimento diminui; e, na maturidade, o crescimento para. Ou seja, desenho da curva parece um S. 
+usamos os dados de casos e obitos que aconteceram até entao para estimar os tres valores e assim projetar a curva de casos e obitos para dias na frente. Para deixar ainda mais preciso, na verdade, nos testamos diferentes versoes e ajustes, procurando sempre aquele que mais se aproxima da curva original. Esse processo e refeito todos os dias, conforme novos dados sao medidos e disponibilizados, para que assim tenhamos sempre uma predicao mais precisa. 
 
-Esse comportamento aproxima-se do comportamento do virus, uma vez que ha um limite para o total de pessoas que pode ser infectada em um determinado lugar - sendo o limite global o tamanho da propria populacao. 
-
-Nesse caso, os calculos sao feitos para estimar a o valor no ponto medio (ponto de inflexao), o valor no ponto maximo e a declividade da curva. 
-
-Para o caso de epidemias, e preferivel usar a versao log-logistica da curva S, pois ela esta definida apenas para valores positivos, o que tende a melhorar as predicoes, ja que no mundo real todos os dados analisados (tempo, confirmados, recuperados, obitos, etc.) sao positivos.
-
-
-<!-- Row -->
-<!-- ------------------------------------- -->
-
-<!-- ### `r valueBox(value =  tags$p(paste('Log Logistico - Obitos Confirmados', ''), style = "font-size: 125%; font-weight: bold;"))` -->
-
-<!-- ```{r} -->
-<!-- plotly::plot_ly(data = pred_ll) %>% -->
-<!--   plotly::add_trace( -->
-<!--     x = ~data, -->
-<!--     y = ~ceiling(predicao * 0.05), -->
-<!--     type = 'scatter', mode = 'lines', -->
-<!--     name = "Cenário Pessimista", -->
-<!--     line = list(color = "orange"), -->
-<!--     marker = list(color = "orange") -->
-<!--   )  %>% -->
-<!--   plotly::add_trace( -->
-<!--     x = ~data, -->
-<!--     y = ~ceiling(predicao * 0.03), -->
-<!--     type = 'scatter', mode = 'lines', -->
-<!--     name = "Cenário Moderado", -->
-<!--     line = list(color = "blue"), -->
-<!--     marker = list(color = "blue") -->
-<!--   )  %>% -->
-<!--   plotly::add_trace( -->
-<!--     x = ~data, -->
-<!--     y = ~ceiling(predicao * 0.02), -->
-<!--     type = 'scatter', mode = 'lines', -->
-<!--     name = "Cenário Otimista", -->
-<!--     line = list(color = "green"), -->
-<!--     marker = list(color = "green") -->
-<!--   )  %>% -->
-<!--   add_trace( -->
-<!--     x = ~data, -->
-<!--     y = ~ceiling(obitos), -->
-<!--     type = 'scatter', mode = 'lines', -->
-<!--     name = "Real", -->
-<!--     line = list(color = "black"), -->
-<!--     marker = list(color = "black") -->
-<!--   ) %>% -->
-<!--   plotly::layout( -->
-<!--     yaxis = list(title = "Obitos Confirmados"), -->
-<!--     xaxis = list(title = "Data do Boletim"), -->
-<!--     hovermode = "compare" -->
-<!--   ) -->
-<!-- ``` -->
+#### Por que usamos essa metodologia? 
+Com as **curvas S** e possivel desenhar comportamentos que comecam devagar e linear, passam para um crescimento exponencial, e terminam com a estabilizacao - dai seu nome, pois se parecem com  um *S*. Esse comportamento aproxima-se do comportamento do virus, uma vez que ha um limite para o total de pessoas que pode ser infectada em um determinado lugar. Para epidemias, e preferivel usar a versao log-logistica ou a versao de Weibull, pois ambas lidam apenas com valores positivos - o que tende a melhorar as predicoes, ja que no mundo real todos os dados analisados (tempo, confirmados, recuperados, obitos, etc.) sao positivos.

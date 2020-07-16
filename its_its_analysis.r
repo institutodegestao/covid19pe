@@ -15,9 +15,9 @@ obitos_pernambuco_its <- obitos_pernambuco_its %>%
 
 obitos_pernambuco_its <- obitos_pernambuco_its %>% replace(is.na(.), 0)
 
-obitos_pernambuco_its <- obitos_pernambuco_its %>% filter(data >= '2020-04-30') %>% filter(data <= '2020-06-16')
+obitos_pernambuco_its <- obitos_pernambuco_its %>% filter(data >= '2020-04-30') %>% filter(data <= '2020-06-22')
 
-obitos_pernambuco_its$situacao <- ifelse(obitos_pernambuco_its$data >= '2020-06-01', 'reabertura', ifelse(obitos_pernambuco_its$data >= '2020-05-16', 'lockdown', 'afastamento'))
+obitos_pernambuco_its$situacao <- ifelse(obitos_pernambuco_its$data >= '2020-06-08', 'reabertura', ifelse(obitos_pernambuco_its$data >= '2020-06-01', 'afastamento', ifelse(obitos_pernambuco_its$data >= '2020-05-16', 'lockdown', 'afastamento')))
 
 plotly::plot_ly(data = obitos_pernambuco_its, mode = 'text', text =~situacao, textposition = 'middle right') %>%
   add_trace(
@@ -37,11 +37,11 @@ plotly::plot_ly(data = obitos_pernambuco_its, mode = 'text', text =~situacao, te
       list(type = "rect",
            fillcolor = "blue", line = list(color = "blue"), opacity = 0.1, x0 = "2020-05-16", x1 = "2020-05-31", xref = "x", y0 = min(obitos_pernambuco_its$confMM7), y1 = max(obitos_pernambuco_its$confMM7), yref = "y"),
       list(type = "rect",
-           fillcolor = "green", line = list(color = "green"), opacity = 0.1, x0 = "2020-06-01", x1 = "2020-06-16", xref = "x", y0 = min(obitos_pernambuco_its$confMM7), y1 = max(obitos_pernambuco_its$confMM7), yref = "y")
+           fillcolor = "green", line = list(color = "green"), opacity = 0.1, x0 = "2020-06-08", x1 = "2020-06-22", xref = "x", y0 = min(obitos_pernambuco_its$confMM7), y1 = max(obitos_pernambuco_its$confMM7), yref = "y")
       )
     )
 
-lockdown_ad <- obitos_pernambuco_its %>% filter(data <= '2020-05-31')
+lockdown_ad <- obitos_pernambuco_its %>% filter(data <= '2020-06-07')
 
 lockdown_ad$lockdown <- ifelse(lockdown_ad$data >= '2020-05-16' & lockdown_ad$data <= '2020-05-31', 1, 0)
 
@@ -51,9 +51,9 @@ itsa.model(data=lockdown_ad, time="data", depvar="confMM7", interrupt_var = "loc
 
 reabertura_ad <- obitos_pernambuco_its %>% filter(data >= '2020-05-16')
 
-reabertura_ad$lockdown <- ifelse(reabertura_ad$data >= '2020-06-01' & reabertura_ad$data <= '2020-06-16', 1, 0)
+reabertura_ad$lockdown <- ifelse(reabertura_ad$data >= '2020-06-08' & reabertura_ad$data <= '2020-06-22', 1, 0)
 
 reabertura_ad <- as.data.frame(reabertura_ad)
 
-itsa.model(data=reabertura_ad, time="data", depvar="confMM7", interrupt_var = "lockdown", alpha=0.05, bootstrap=TRUE, Reps = 1000)
+reabertura_ista <- itsa.model(data=reabertura_ad, time="data", depvar="confMM7", interrupt_var = "lockdown", alpha=0.05, bootstrap=TRUE, Reps = 1000)
 

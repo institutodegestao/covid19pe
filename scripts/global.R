@@ -6,6 +6,21 @@ library(shiny)
 library(zoo)
 library(lubridate)
 
+###################### PREDIÇÃO LEITOS #########################
+
+base_predicao_leitos <- read.csv2('resultado/base_predicao_leitos.csv', sep = ',')
+
+base_predicao_leitos$data <- base::as.Date(base_predicao_leitos$data, format = "%Y-%m-%d")
+
+modelo4 <- readRDS("resultado/modelo4.rda")
+
+modelo4_importancia <- as.data.frame(summary(modelo4)[["coefficients"]][, "t value"][-1])
+
+colnames(modelo4_importancia) <- 'absoluta'
+rownames(modelo4_importancia) <- c('tendencia', 'obitos_7dias', 'int_uti_7dias', 'leitos_uti_oc_7dias', 'casos_srag_7dias')
+
+modelo4_importancia$relativa <- round(modelo4_importancia$absoluta / sum(modelo4_importancia$absoluta),3)
+
 ######################## PERNAMBUCO ############################
 
 ######################## QUADRO SINTETICO ######################
