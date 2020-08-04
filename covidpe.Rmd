@@ -2158,10 +2158,14 @@ Row
 
 ```{r analises rt macro}
 
+shiny::radioButtons(inputId = 'radioAn3', 'Modelo', c('Casos Totais', 'Rt'), inline = T)
+
 selectizeInput('macro_rt', 'Macrorregiao', choices = sort(as.character(unique(confirmados_macro$macro))), selected = 'I - METROPOLITANA')
 
 renderPlotly({
- 
+
+  if(input$radioAn3 == "Rt") {
+   
   x <- confirmados_macro %>% filter(macro == input$macro_rt)
   
   macro_confirmados_rt <- x %>% compute_likelihood() %>% compute_posterior() %>% estimate_rt()
@@ -2180,6 +2184,34 @@ fig <- ggplotly(p) %>%
   )
 
 fig
+  }
+  
+  else {
+   plotly::plot_ly(data = pred_ll_m1) %>%
+  plotly::add_trace(
+    x = ~data,
+    y = ~ceiling(predicao),
+    type = 'scatter', mode = 'lines',
+    name = "Predição",
+    line = list(color = "blue"),
+    marker = list(color = "blue")
+  )  %>%
+  add_trace(
+    x = ~data,
+    y = ~ceiling(totalCases),
+    type = 'scatter', mode = 'lines',
+    name = "Real",
+    line = list(color = "red"),
+    marker = list(color = "red")
+  ) %>%
+  plotly::layout(
+    title = 'MACRO I',
+    height = '380',
+    yaxis = list(title = "Casos Confirmados"),
+    xaxis = list(title = "Data do Boletim"),
+    hovermode = "compare"
+  ) 
+  }
 })
 ```
 

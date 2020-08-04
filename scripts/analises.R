@@ -2,6 +2,8 @@
 
 pred_ll <- read.csv2('resultado/pred_ll.csv', sep = ';')
 
+pred_ll_m1 <- read.csv2('resultado/pred_ll_m1.csv', sep = ';')
+
 mundo <- read.csv2('resultado/covid19gravidade.csv', sep = ';')
 
 colnames(mundo) <- c('local', 'casos', 'novos_casos', 'obitos', 'novos_obitos', 'recuperados', 'ativos', 'criticos', 'casos_milhao', 'obitos_milhao', 'concluidos', 'testes', 'testes_milhao', 'txConc', 'txConcObitos', 'txCriticos', 'txPopObitos', 'data_extracao', 'lat', 'long')
