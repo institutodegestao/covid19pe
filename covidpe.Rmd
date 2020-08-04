@@ -2183,6 +2183,88 @@ fig
 })
 ```
 
+Row
+-------------------------------------
+
+### `r valueBox(value =  tags$p('Predições | R0 (Número Básico de Reprodução) | Rt (Número Reprodutivo Efetivo)', style = "font-size: 115%;"))`
+
+```{r}
+valueBox('Geres', color = 'purple')
+```
+
+Row
+-------------------------------------
+
+### `r valueBox(value =  tags$p('Modelagens Matemáticas', style = "font-size: 125%; font-weight: bold;"))`
+
+```{r analises rt geres}
+
+selectizeInput('geres_rt', 'Geres', choices = sort(as.character(unique(confirmados_geres$geres))), selected = 'I GERES')
+
+renderPlotly({
+ 
+  x <- confirmados_geres %>% filter(geres == input$geres_rt)
+  
+  geres_confirmados_rt <- x %>% compute_likelihood() %>% compute_posterior() %>% estimate_rt()
+
+colnames(geres_confirmados_rt) <- c('data', 'rt', 'rt_min', 'rt_max')
+
+p <- ggplot(geres_confirmados_rt, aes(y=rt, x=data)) + geom_line(colour = 'blue1', linetype = "dashed") + geom_point(colour = 'blue') + geom_ribbon(aes(ymin=rt_min, ymax=rt_max, x=data), alpha = 0.2) + scale_colour_manual("", values="blue") + scale_fill_manual("", values="blue1") + geom_hline(yintercept=1, linetype = "dashed")
+
+fig <- ggplotly(p) %>%
+  plotly::layout(
+    height = '380',
+    title = '',
+    yaxis = list(title = "Rt - Número Reprodutivo Efetivo"),
+    xaxis = list(title = ""),
+    hovermode = "compare"
+  )
+
+fig
+})
+```
+
+Row
+-------------------------------------
+
+### `r valueBox(value =  tags$p('Predições | R0 (Número Básico de Reprodução) | Rt (Número Reprodutivo Efetivo)', style = "font-size: 115%;"))`
+
+```{r}
+valueBox('Município', color = 'purple')
+```
+
+Row
+-------------------------------------
+
+### `r valueBox(value =  tags$p('Modelagens Matemáticas', style = "font-size: 125%; font-weight: bold;"))`
+
+```{r analises rt municipios}
+
+selectizeInput('mun_rt', 'Município', choices = sort(as.character(unique(confirmados_mun_rt$municipio))), selected = 'RECIFE')
+
+renderPlotly({
+ 
+  x <- confirmados_mun_rt %>% filter(municipio == input$mun_rt)
+  
+  mun_confirmados_rt <- x %>% compute_likelihood() %>% compute_posterior() %>% estimate_rt()
+
+colnames(mun_confirmados_rt) <- c('data', 'rt', 'rt_min', 'rt_max')
+
+p <- ggplot(mun_confirmados_rt, aes(y=rt, x=data)) + geom_line(colour = 'blue1', linetype = "dashed") + geom_point(colour = 'blue') + geom_ribbon(aes(ymin=rt_min, ymax=rt_max, x=data), alpha = 0.2) + scale_colour_manual("", values="blue") + scale_fill_manual("", values="blue1") + geom_hline(yintercept=1, linetype = "dashed")
+
+fig <- ggplotly(p) %>%
+  plotly::layout(
+    height = '380',
+    title = '',
+    yaxis = list(title = "Rt - Número Reprodutivo Efetivo"),
+    xaxis = list(title = ""),
+    hovermode = "compare"
+  )
+
+fig
+})
+```
+
 Metadados {data-icon="fa-info" data-orientation=rows}
 =====================================
 
