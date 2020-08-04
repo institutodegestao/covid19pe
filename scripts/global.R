@@ -5,6 +5,7 @@ library(plotly)
 library(shiny)
 library(zoo)
 library(lubridate)
+library(DT)
 
 ###################### PREDIÇÃO LEITOS #########################
 
@@ -14,12 +15,11 @@ base_predicao_leitos$data <- base::as.Date(base_predicao_leitos$data, format = "
 
 modelo4 <- readRDS("resultado/modelo4.rda")
 
-modelo4_importancia <- as.data.frame(summary(modelo4)[["coefficients"]][, "t value"][-1])
+modelo4_importancia <- data.frame('peso' = round(summary(modelo4)[["coefficients"]][, "Estimate"][-1], 3), 'importancia' = round(summary(modelo4)[["coefficients"]][, "t value"][-1],3))
 
-colnames(modelo4_importancia) <- 'absoluta'
-rownames(modelo4_importancia) <- c('tendencia', 'obitos_7dias', 'int_uti_7dias', 'leitos_uti_oc_7dias', 'casos_srag_7dias')
+#rownames(modelo4_importancia) <- c('tendencia', 'obitos_7dias', 'int_uti_7dias', 'leitos_uti_oc_7dias', 'casos_srag_7dias')
 
-modelo4_importancia$relativa <- round(modelo4_importancia$absoluta / sum(modelo4_importancia$absoluta),3)
+modelo4_importancia$importancia_relativa <- round(modelo4_importancia$importancia / sum(modelo4_importancia$importancia),3)
 
 ######################## PERNAMBUCO ############################
 
@@ -30,7 +30,7 @@ quadro_sint <- read.csv2('resultado/evolucao_geral.csv', sep = ';')
 
 quadro_sint <- quadro_sint %>% replace(is.na(.), 0)
 
-quadro_sint$data <- base::as.Date(quadro_sint$dt_referencia, format = "%Y-%m-%d")
+quadro_sint$data <- base::as.Date(quadro_sint$dt_referencia, format = "%d/%m/%Y")
 
 quadro_sint <- quadro_sint %>%
   mutate(testesMM7 = round(rollmean(x = testes_novos, 7, align = "right", fill = NA),2))

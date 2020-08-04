@@ -56,6 +56,10 @@ confirmados_macro <- confirmados_municipio %>% group_by(data = data, macro = mac
 
 confirmados_macro <- confirmados_macro %>% group_by %>% mutate(casosNovosMM7 = ceiling(rollmean(x = casosNovos, 7, align = "right", fill = NA)))
 
+confirmados_geres <- confirmados_municipio %>% group_by(data = data, geres = geres) %>% summarise(casosNovos = sum(casosNovos))
+
+confirmados_geres <- confirmados_geres %>% group_by %>% mutate(casosNovosMM7 = ceiling(rollmean(x = casosNovos, 7, align = "right", fill = NA)))
+
 # macro_confirmados_rt <- confirmados_macro %>% compute_likelihood() %>% compute_posterior() %>% estimate_rt()
 # 
 # colnames(macro_confirmados_rt) <- c('data', 'rt', 'rt_min', 'rt_max')

@@ -1,5 +1,5 @@
 ---
-title: "Sala de Situacao - COVID-19 PE"
+title: "Sala de Situação - COVID-19 PE"
 output:
    flexdashboard::flex_dashboard:
     # orientation: rows
@@ -26,11 +26,43 @@ Epidemiologia {data-icon="fa-chart-line" data-orientation=rows}
 Row
 -------------------------------------
 
-### `r valueBox(value =  tags$p('Casos | Obitos', style = "font-size: 125%;"))`
+### `r valueBox(value =  tags$p('Casos | Óbitos', style = "font-size: 125%;"))`
 
 ```{r epi pernambuco}
 valueBox('Pernambuco', color = 'blue')
 ```
+
+Row
+-------------------------------------
+
+### `r valueBox(value =  tags$p('Casos COVID19-SRAG', style = "font-size: 125%;"))`
+
+```{r epi casoscovid19pe}
+valueBox( format( sum( srag_pernambuco$CONFIRMADO), big.mark="." ), color = 'blue', icon = "fa-virus")
+```
+
+### `r valueBox(value =  tags$p('Casos SRAG', style = "font-size: 125%;"))`
+
+```{r epi casossragpe}
+valueBox(format ( sum(srag_pernambuco$SRAG), big.mark="." ), color = 'blue', icon = "fa-virus")
+```
+
+### `r valueBox(value =  tags$p('Óbitos COVID19', style = "font-size: 125%;"))`
+
+```{r epi obitoscovid19pe}
+valueBox( format( sum(obitos_pernambuco$CONFIRMADO), big.mark="." ), color = 'blue', icon = "fa-virus")
+```
+
+### `r valueBox(value =  tags$p('Óbitos SRAG', style = "font-size: 125%;"))`
+
+```{r epi obitossragpe}
+valueBox( format( sum(obitos_pernambuco$SRAG), big.mark="." ), color = 'blue', icon = "fa-virus")
+```
+
+Row {data-height=30}
+-------------------------------------
+
+* Para mais informações sobre o Calendário Epidemiológico 2020, acesse http://portalsinan.saude.gov.br/calendario-epidemiologico
 
 Row
 -------------------------------------
@@ -129,7 +161,7 @@ plotly::plot_ly(data = srag_pernambuco) %>%
 Row
 -------------------------------------
 
-### `r valueBox(value =  tags$p('Obitos Pernambuco', style = "font-size: 115%; font-weight: bold;"))`
+### `r valueBox(value =  tags$p('Óbitos Pernambuco', style = "font-size: 115%; font-weight: bold;"))`
 
 ```{r epi resultados obitos}
 
@@ -225,13 +257,13 @@ Row
 ### `r valueBox(value =  tags$p('Casos | Obitos', style = "font-size: 125%;"))`
 
 ```{r epi macrorregiao}
-valueBox('Macrorregiao', color = 'blue')
+valueBox('Macrorregião', color = 'blue')
 ```
 
 Row
 -------------------------------------
 
-### `r valueBox(value =  tags$p('Casos Macrorregiao', style = "font-size: 115%; font-weight: bold;"))`
+### `r valueBox(value =  tags$p('Casos Macrorregião', style = "font-size: 115%; font-weight: bold;"))`
 
 ```{r casos macrorregiao}
 
@@ -330,7 +362,7 @@ plotly::plot_ly(data = srag_semana_macro) %>%
 Row
 -------------------------------------
 
-### `r valueBox(value =  tags$p('Obitos Macrorregiao', style = "font-size: 115%; font-weight: bold;"))`
+### `r valueBox(value =  tags$p('Óbitos Macrorregião', style = "font-size: 115%; font-weight: bold;"))`
 
 ```{r obitos macrorregiao}
 
@@ -429,7 +461,7 @@ plotly::plot_ly(data = obito_semana_macro) %>%
 Row
 -------------------------------------
 
-### `r valueBox(value =  tags$p('Casos | Obitos', style = "font-size: 125%;"))`
+### `r valueBox(value =  tags$p('Casos | Óbitos', style = "font-size: 125%;"))`
 
 ```{r epi geres}
 valueBox('Geres', color = 'blue')
@@ -537,7 +569,7 @@ plotly::plot_ly(data = srag_semana_geres) %>%
 Row
 -------------------------------------
 
-### `r valueBox(value =  tags$p('Obitos Geres', style = "font-size: 115%; font-weight: bold;"))`
+### `r valueBox(value =  tags$p('Óbitos Geres', style = "font-size: 115%; font-weight: bold;"))`
 
 ```{r obitos geres}
 
@@ -636,16 +668,16 @@ plotly::plot_ly(data = obito_semana_geres) %>%
 Row
 -------------------------------------
 
-### `r valueBox(value =  tags$p('Casos | Obitos', style = "font-size: 125%;"))`
+### `r valueBox(value =  tags$p('Casos | Óbitos', style = "font-size: 125%;"))`
 
 ```{r epi municipio}
-valueBox('Municipio', color = 'blue')
+valueBox('Município', color = 'blue')
 ```
 
 Row
 -------------------------------------
 
-### `r valueBox(value =  tags$p('Casos Municipio', style = "font-size: 115%; font-weight: bold;"))`
+### `r valueBox(value =  tags$p('Casos Município', style = "font-size: 115%; font-weight: bold;"))`
 
 ```{r casos municipio}
 
@@ -744,7 +776,7 @@ plotly::plot_ly(data = srag_semana_municipio) %>%
 Row
 -------------------------------------
 
-### `r valueBox(value =  tags$p('Obitos Municipio', style = "font-size: 115%; font-weight: bold;"))`
+### `r valueBox(value =  tags$p('Óbitos Município', style = "font-size: 115%; font-weight: bold;"))`
 
 ```{r obitos municipio}
 
@@ -840,13 +872,13 @@ plotly::plot_ly(data = obitos_semana_municipio) %>%
 })
 ```
 
-Sistema de Saude {data-icon="fa-chart-bar" data-orientation=rows}
+Sistema de Saúde {data-icon="fa-chart-bar" data-orientation=rows}
 ===================================== 
 
 Row
 -------------------------------------
 
-### `r valueBox(value =  tags$p('Solicitacoes | Leitos', style = "font-size: 125%;"))`
+### `r valueBox(value =  tags$p('Solicitações | Leitos', style = "font-size: 125%;"))`
 
 ```{r sist saude pernambuco}
 valueBox('Pernambuco', color = 'orange')
@@ -855,7 +887,7 @@ valueBox('Pernambuco', color = 'orange')
 Row
 -------------------------------------
 
-### `r valueBox(value =  tags$p('Indicadores de Solicitacoes - Media Movel 7 Dias (MM7)', style = "font-size: 125%; font-weight: bold;"))`
+### `r valueBox(value =  tags$p('Indicadores de Solicitações - Média Móvel 7 Dias (MM7)', style = "font-size: 125%; font-weight: bold;"))`
 
 ```{r sis saude solicitacoes pernambuco}
 
@@ -979,7 +1011,7 @@ else {
 Row
 -------------------------------------
 
-### `r valueBox(value =  tags$p('Indicadores de Leitos - Media Movel 7 Dias (MM7)', style = "font-size: 125%; font-weight: bold;"))`
+### `r valueBox(value =  tags$p('Indicadores de Leitos - Média Móvel 7 Dias (MM7)', style = "font-size: 125%; font-weight: bold;"))`
 
 ```{r sis saude internacoes pernambuco}
 
@@ -1103,16 +1135,16 @@ else {
 Row
 -------------------------------------
 
-### `r valueBox(value =  tags$p('Solicitacoes | Leitos', style = "font-size: 125%;"))`
+### `r valueBox(value =  tags$p('Solicitações | Leitos', style = "font-size: 125%;"))`
 
 ```{r sist saude macro}
-valueBox('Macrorregiao', color = 'orange')
+valueBox('Macrorregião', color = 'orange')
 ```
 
 Row
 -------------------------------------
 
-### `r valueBox(value =  tags$p('Indicadores de Solicitacoes - Media Movel 7 Dias (MM7)', style = "font-size: 125%; font-weight: bold;"))`
+### `r valueBox(value =  tags$p('Indicadores de Solicitações - Média Móvel 7 Dias (MM7)', style = "font-size: 125%; font-weight: bold;"))`
 
 ```{r sis saude solicitacoes macrorregiao}
 
@@ -1242,7 +1274,7 @@ else {
 Row
 -------------------------------------
 
-### `r valueBox(value =  tags$p('Indicadores de Leitos - Media Movel 7 Dias (MM7)', style = "font-size: 125%; font-weight: bold;"))`
+### `r valueBox(value =  tags$p('Indicadores de Leitos - Média Móvel 7 Dias (MM7)', style = "font-size: 125%; font-weight: bold;"))`
 
 ```{r sis saude internacoes macro}
 
@@ -1371,7 +1403,7 @@ else {
 Row
 -------------------------------------
 
-### `r valueBox(value =  tags$p('Solicitacoes | Leitos', style = "font-size: 125%;"))`
+### `r valueBox(value =  tags$p('Solicitações | Leitos', style = "font-size: 125%;"))`
 
 ```{r sist saude geres}
 valueBox('Geres', color = 'orange')
@@ -1380,7 +1412,7 @@ valueBox('Geres', color = 'orange')
 Row
 -------------------------------------
 
-### `r valueBox(value =  tags$p('Indicadores de Solicitacoes - Media Movel 7 Dias (MM7)', style = "font-size: 125%; font-weight: bold;"))`
+### `r valueBox(value =  tags$p('Indicadores de Solicitações - Média Móvel 7 Dias (MM7)', style = "font-size: 125%; font-weight: bold;"))`
 
 ```{r sis saude solicitacoes geres}
 
@@ -1510,7 +1542,7 @@ else {
 Row
 -------------------------------------
 
-### `r valueBox(value =  tags$p('Indicadores de Leitos - Media Movel 7 Dias (MM7)', style = "font-size: 125%; font-weight: bold;"))`
+### `r valueBox(value =  tags$p('Indicadores de Leitos - Média Móvel 7 Dias (MM7)', style = "font-size: 125%; font-weight: bold;"))`
 
 ```{r sis saude internacoes geres}
 
@@ -1639,16 +1671,16 @@ else {
 Row
 -------------------------------------
 
-### `r valueBox(value =  tags$p('Solicitacoes | Leitos', style = "font-size: 125%;"))`
+### `r valueBox(value =  tags$p('Solicitações | Leitos', style = "font-size: 125%;"))`
 
 ```{r sist saude municipio}
-valueBox('Municipio', color = 'orange')
+valueBox('Município', color = 'orange')
 ```
 
 Row
 -------------------------------------
 
-### `r valueBox(value =  tags$p('Indicadores de Solicitacoes - Media Movel 7 Dias (MM7)', style = "font-size: 125%; font-weight: bold;"))`
+### `r valueBox(value =  tags$p('Indicadores de Solicitações - Média Móvel 7 Dias (MM7)', style = "font-size: 125%; font-weight: bold;"))`
 
 ```{r sis saude solicitacoes municipio}
 
@@ -1778,7 +1810,7 @@ else {
 Row
 -------------------------------------
 
-### `r valueBox(value =  tags$p('Indicadores de Leitos - Media Movel 7 Dias (MM7)', style = "font-size: 125%; font-weight: bold;"))`
+### `r valueBox(value =  tags$p('Indicadores de Leitos - Média Móvel 7 Dias (MM7)', style = "font-size: 125%; font-weight: bold;"))`
 
 ```{r sis saude internacoes municipio}
 
@@ -1904,13 +1936,13 @@ else {
 })
 ```
 
-Analises {data-icon="fa-diagnoses" data-orientation=rows}
+Análises {data-icon="fa-diagnoses" data-orientation=rows}
 ===================================== 
 
 Row
 -------------------------------------
 
-### `r valueBox(value =  tags$p('Predicoes | R0 (Numero Basico de Reproducao) | Rt (Numero Reprodutivo Efetivo)', style = "font-size: 115%;"))`
+### `r valueBox(value =  tags$p('Predições | R0 (Número Básico de Reprodução) | Rt (Número Reprodutivo Efetivo)', style = "font-size: 115%;"))`
 
 ```{r}
 valueBox('Pernambuco', color = 'purple')
@@ -1934,7 +1966,7 @@ plotly::plot_ly(data = pred_ll) %>%
     x = ~data,
     y = ~ceiling(predicao),
     type = 'scatter', mode = 'lines',
-    name = "Predicao",
+    name = "Predição",
     line = list(color = "blue"),
     marker = list(color = "blue")
   )  %>%
@@ -1966,7 +1998,7 @@ else {
     x = ~data,
     y = ceiling(belgicaCasosMilhao),
     type = 'scatter', mode = 'lines',
-    name = "Belgica",
+    name = "Bélgica",
     line = list(color = "purple", dash = 'dash')
     )  %>%
   add_trace(
@@ -1980,7 +2012,7 @@ else {
     x = ~data,
     y = ~ceiling(predicao/9.55),
     type = 'scatter', mode = 'lines',
-    name = "Predicao",
+    name = "Predição",
     line = list(color = "blue"),
     marker = list(color = "blue")
   )  %>%
@@ -1994,7 +2026,7 @@ else {
   ) %>%
   plotly::layout(
     height = '380',
-    yaxis = list(title = "Casos Confirmados por Milhao de Habitantes"),
+    yaxis = list(title = "Casos Confirmados por Milhão de Habitantes"),
     xaxis = list(title = "Data do Boletim"),
     hovermode = "compare"
   )
@@ -2009,7 +2041,7 @@ else {
 Row
 -------------------------------------
 
-### `r valueBox(value =  tags$p(paste('Modelagens Matematicas - Obitos', ''), style = "font-size: 125%; font-weight: bold;"))`
+### `r valueBox(value =  tags$p(paste('Modelagens Matemáticas - Óbitos', ''), style = "font-size: 125%; font-weight: bold;"))`
 
 ```{r}
 
@@ -2023,7 +2055,7 @@ plotly::plot_ly(data = pred_ll) %>%
     x = ~data,
     y = ~ceiling(predicaoOb),
     type = 'scatter', mode = 'lines',
-    name = "Predicao",
+    name = "Predição",
     line = list(color = "blue"),
     marker = list(color = "blue")
   )  %>%
@@ -2037,7 +2069,7 @@ plotly::plot_ly(data = pred_ll) %>%
   ) %>%
   plotly::layout(
     height = '380',
-    yaxis = list(title = "Obitos Confirmados"),
+    yaxis = list(title = "Óbitos Confirmados"),
     xaxis = list(title = "Data do Boletim"),
     hovermode = "compare"
   )
@@ -2055,7 +2087,7 @@ else {
     x = ~data,
     y = ceiling(belgicaMortesMilhao),
     type = 'scatter', mode = 'lines',
-    name = "Belgica",
+    name = "Bélgica",
     line = list(color = "purple", dash = 'dash')
     )  %>%
   add_trace(
@@ -2069,7 +2101,7 @@ else {
     x = ~data,
     y = ~ceiling(predicaoOb/9.55),
     type = 'scatter', mode = 'lines',
-    name = "Predicao",
+    name = "Predição",
     line = list(color = "blue"),
     marker = list(color = "blue")
   )  %>%
@@ -2083,7 +2115,7 @@ else {
   ) %>%
   plotly::layout(
     height = '380',
-    yaxis = list(title = "Casos Confirmados por Milhao de Habitantes"),
+    yaxis = list(title = "Casos Confirmados por Milhão de Habitantes"),
     xaxis = list(title = "Data do Boletim"),
     hovermode = "compare"
   )
@@ -2094,17 +2126,17 @@ else {
 Row
 -------------------------------------
 
-### `r valueBox(value =  tags$p(paste('Modelagens Matematicas - Leitos UTI', ''), style = "font-size: 125%; font-weight: bold;"))`
+### `r valueBox(value =  tags$p(paste('Modelagens Matemáticas - Leitos UTI', ''), style = "font-size: 125%; font-weight: bold;"))`
 
 ```{r}
 plotly::plot_ly(base_predicao_leitos) %>% plotly::add_trace(x = ~data, y = ~leitos_uti_ocupado, type = 'scatter', mode = 'markers', name = "Leitos Ocupados - Real") %>% add_trace(
   x = ~data, 
   y = ceiling(predict(modelo4, base_predicao_leitos)), 
-  name = "Leitos Ocupados - Estimado", mode = 'lines') %>% plotly::add_trace(
+  name = "Leitos Ocupados - Estimado", mode = 'lines', line = list(width = 4)) %>% plotly::add_trace(
     x = ~data, 
     y = ~leitos_uti_disponivel, 
-    name = "Leitos Disponiveis", mode = 'markers') %>% layout(
-    title = 'Predicao de Leitos de UTI SRAG SUS em Pernambuco', 
+    name = "Leitos Disponíveis - Real", mode = 'markers') %>% layout(
+    title = 'Predição de Leitos de UTI SRAG SUS em Pernambuco', 
     xaxis = list(title = 'Data', showgrid = FALSE), 
     yaxis = list(title = 'Leitos de UTI SRAG SUS Ocupados', showgrid = FALSE),
     hovermode = "compare")
@@ -2113,16 +2145,16 @@ plotly::plot_ly(base_predicao_leitos) %>% plotly::add_trace(x = ~data, y = ~leit
 Row
 -------------------------------------
 
-### `r valueBox(value =  tags$p('Predicoes | R0 (Numero Basico de Reproducao) | Rt (Numero Reprodutivo Efetivo)', style = "font-size: 115%;"))`
+### `r valueBox(value =  tags$p('Predições | R0 (Número Básico de Reprodução) | Rt (Número Reprodutivo Efetivo)', style = "font-size: 115%;"))`
 
 ```{r}
-valueBox('Macrorregiao', color = 'purple')
+valueBox('Macrorregião', color = 'purple')
 ```
 
 Row
 -------------------------------------
 
-### `r valueBox(value =  tags$p('Modelagens Matematicas', style = "font-size: 125%; font-weight: bold;"))`
+### `r valueBox(value =  tags$p('Modelagens Matemáticas', style = "font-size: 125%; font-weight: bold;"))`
 
 ```{r analises rt macro}
 
@@ -2142,7 +2174,7 @@ fig <- ggplotly(p) %>%
   plotly::layout(
     height = '380',
     title = '',
-    yaxis = list(title = "Rt - Numero Reprodutivo Efetivo"),
+    yaxis = list(title = "Rt - Número Reprodutivo Efetivo"),
     xaxis = list(title = ""),
     hovermode = "compare"
   )
@@ -2151,19 +2183,62 @@ fig
 })
 ```
 
-Metadados {data-icon="fa-info"}
+Metadados {data-icon="fa-info" data-orientation=rows}
 =====================================
 
 Row
 -------------------------------------
 
-### Explicacao dos Modelos
+### Modelo de Predição de Casos e Óbitos
 
-#### Como fizemos a predicao de casos e de obitos?
+#### Como fizemos a predição de casos e de óbitos?
 
-Com base em **curvas em S** (distribuicoes logisticas). Essas curvas foram utilizadas inicialmente para o estudo de crescimento populacional e depois para analise de sobrevivencia, analise de medicamentos e doencas. Nesse caso, os calculos sao feitos para estimar a o **valor no ponto medio** ou ponto de inflexao (que e quando a curva muda), o **valor no ponto maximo** e a **inclinacao da curva**. 
+Com base em **curvas em S** (distribuições logísticas). Essas curvas foram utilizadas inicialmente para o estudo de crescimento populacional e depois para análise de sobrevivência, análise de medicamentos e doenças. Nesse caso, os cálculos são feitos para estimar três valores:
+* **valor no ponto médio** ou ponto de inflexão, que é quando a curva muda de comportamento;
+* **valor no ponto máximo**, que nos indica até onde a curva cresce e qual seria o valor máximo de óbitos, por exemplo; e 
+* **inclinação da curva**, ou seja, o quão rápido a curva sobe nos seus diferentes trechos. 
 
-usamos os dados de casos e obitos que aconteceram até entao para estimar os tres valores e assim projetar a curva de casos e obitos para dias na frente. Para deixar ainda mais preciso, na verdade, nos testamos diferentes versoes e ajustes, procurando sempre aquele que mais se aproxima da curva original. Esse processo e refeito todos os dias, conforme novos dados sao medidos e disponibilizados, para que assim tenhamos sempre uma predicao mais precisa. 
+Com esses três valores é possível montar toda a curva. Para calculá-los, usamos os dados de casos e óbitos que aconteceram ate então. Assim, é possível estimar os três valores e projetar a curva de casos e óbitos para dias na frente. Para deixar ainda mais preciso, na verdade, nos testamos diferentes versões e ajustes, procurando sempre aquele que mais se aproxima da curva original. Esse processo é refeito todos os dias, conforme novos dados são medidos e disponibilizados, para que assim tenhamos sempre uma predição mais precisa. 
 
-#### Por que usamos essa metodologia? 
-Com as **curvas S** e possivel desenhar comportamentos que comecam devagar e linear, passam para um crescimento exponencial, e terminam com a estabilizacao - dai seu nome, pois se parecem com  um *S*. Esse comportamento aproxima-se do comportamento do virus, uma vez que ha um limite para o total de pessoas que pode ser infectada em um determinado lugar. Para epidemias, e preferivel usar a versao log-logistica ou a versao de Weibull, pois ambas lidam apenas com valores positivos - o que tende a melhorar as predicoes, ja que no mundo real todos os dados analisados (tempo, confirmados, recuperados, obitos, etc.) sao positivos.
+#### Por que usamos essa metodologia para casos e óbitos? 
+Com as **curvas S** e possível desenhar comportamentos que começam devagar e linear, passam para um crescimento exponencial, e terminam com a estabilização - daí seu nome, pois se parecem com  um *S*. Esse comportamento aproxima-se do comportamento do vírus, uma vez que há um limite para o total de pessoas que podem ser infectadas em um determinado lugar. Para epidemias, e preferível usar a versão log-logística ou a versão de Weibull, pois ambas lidam apenas com valores positivos - o que ajuda com as predições, já que no mundo real todos os dados analisados (tempo, confirmados, recuperados, óbitos, etc.) são positivos. Assim, a utilização de modelos da familia S permite ajustar diferentes fases de crescimento (devagar e linear, exponencial, devagar e estabilizando), estimando quando o evento terminará, e qual será seu valor. 
+
+Row
+-------------------------------------
+
+### Modelo de Predição de Leitos
+
+#### Como fizemos a predição de leitos ocupados de UTI SRAG SUS?
+
+Com um *modelo dinâmico para séries temporais*. Isso quer dizer que o modelo usa os valores antigos de leitos ocupados na última semana para criar suas predições - por isso chamamos de dinâmico, pois usa o mesmo indicador no passado para predizer o futuro. Além disso, são usados indicadores auxiliares, como o total de casos srag na última semana e o total de óbitos srag na última semana. 
+
+Então, com os valores históricos desses três indicadores - leitos ocupados uti srag sus, obitos srag e casos srag - e possível estimar a importância e o peso de cada indicador para o cálculo do número de leitos ocupados de uti srag sus na semana seguinte, e assim predizer os prováveis valores futuros dos leitos para uma semana na frente. 
+
+Na tabela a seguir, vemos esses valores - peso e importância -, representados da seguinte forma: **peso** e o multiplicador, ou seja, se tivermos um peso de 0.5, isso indica que devemos dividir aquele indicador por 2 para obter o outro; **importância** é a importância absoluta, na escala original do seu teste de estimativa; e **importância relativa** é a importância em termos percentuais. Finalmente, sempre que o sufixo "_l7" aparecer, quer dizer que são usados na predição os valores de 7 dias atrás. 
+
+```{r}
+datatable(modelo4_importancia)
+```
+
+#### Por que usamos essa metodologia para leitos ocupados de UTI SRAG SUS?
+
+Os dados de leitos de UTI ao longo do tempo apresentam um padrão de série temporal com tendência e sazonalidade. Tendência quer dizer que é possível observar se os dados estão tendendo a crescer, estacionar ou cair. Sazonalidade significa que, além de uma tendência geral, há repetições de altos e baixos em determinados dias da semana. Assim podemos usar esses dois padrões, tendência e sazonalidade, para predizer os valores do indicador na semana seguinte.
+
+No caso da ocupação de leitos, é importante que o painel seja dinâmico e multivariado. Dinâmico tem o sentido de que, além dos valores de tendência e sazonalidade, deve-se usar valores o mesmo indicador - leitos ocupados de uti srag sus - com valores de dias anteriores. Nesse caso, usamos sempre de 7 dias atrás, pois esse indicador apresenta sazonalidade semanal, ou seja, se voce comparar as segundas-feiras da série temporal dos dados, vai encontrar padrões semelhantes. Já multivariado quer dizer que foram usados outros indicadores na predição - no caso, casos srag e óbitos srag. Esses indicadores auxiliares entram na equação para melhorá-lo e evitar que o modelo apenas repita os valores de ocupação de leitos de uma semana na seguinte. Com isso, temos um modelo robusto, que apresenta ótimo ajuste e baixo nível de erro.  
+
+Row
+-------------------------------------
+
+### Modelo de Estimativa do Número Reprodutivo Efetivo (Rt)
+
+#### Como fizemos a estimativa do Rt?
+O Rt, ou número efetivo de reprodução, não pode ser medido diretamente. Por isso, são necessários métodos que permitam usar o número de infectados dia a dia para a estimativa, sobretudo no caso de doenças emergentes¹. A forma escolhida para fazer isso foi um método que usa a probabilidade primária de ocorrência de casos por dia revisada pela ocorrência real dos dados. Isso quer dizer que primeiro estimamos como seria a ocorrência de novos casos num modelo de distribuição teórica, e revisamos com a ocorrência dos dados, comparando as variações de um dia para o outro. Já que os dados diários variam bastante, de acordo com o padrão de busca pelo sistema de saúde, notificação e testagem, foi utilizada a média móvel de 7 dias (MM7) para aumentar a precisão na estimativa do Rt, seguindo os modelos testados por outros autores²³.
+
+#### Por que usamos essa metodologia para Rt? 
+O R0, ou número básico de reprodução, representa quantas infecções secundárias são produzidas por uma infecção inicial. O Rt, número reprodutivo efetivo, representa, dia após dia, quantas infecções são esperadas a partir de uma primeira infeção. Seu uso permite análises melhores para a política pública, já que sua variação responde a ações como isolamento, uso de máscaras, etc., pois não é a reprodução primária do vírus, mas, sim, sua reprodução efetiva, considerando o padrão observado nos dados. 
+
+¹Real Time Bayesian Estimation of the Epidemic Potential of Emerging Infectious Diseases (2008). https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0002185
+
+² The Metric We Need to Manage COVID-19 - Rt: the effective reproduction number (2020). http://systrom.com/blog/the-metric-we-need-to-manage-covid-19/
+
+³ Serial Interval of COVID-19 among Publicly Reported Confirmed Cases (2020). https://wwwnc.cdc.gov/eid/article/26/6/20-0357_article
