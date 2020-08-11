@@ -2187,7 +2187,10 @@ fig
   }
   
   else {
-   plotly::plot_ly(data = pred_ll_m1) %>%
+    
+    x <- pred_ll_macro %>% filter(macro == input$macro_rt)
+    
+   plotly::plot_ly(data = x) %>%
   plotly::add_trace(
     x = ~data,
     y = ~ceiling(predicao),
@@ -2205,7 +2208,7 @@ fig
     marker = list(color = "red")
   ) %>%
   plotly::layout(
-    title = 'MACRO I',
+    # title = 'MACRO I',
     height = '380',
     yaxis = list(title = "Casos Confirmados"),
     xaxis = list(title = "Data do Boletim"),

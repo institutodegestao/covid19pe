@@ -2,7 +2,7 @@
 
 pred_ll <- read.csv2('resultado/pred_ll.csv', sep = ';')
 
-pred_ll_m1 <- read.csv2('resultado/pred_ll_m1.csv', sep = ';')
+pred_ll_macro <- read.csv2('resultado/pred_ll_macro.csv', sep = ';')
 
 mundo <- read.csv2('resultado/covid19gravidade.csv', sep = ';')
 
